@@ -1,0 +1,1 @@
+from icarus_backend.mission.MissionModel import Mission
