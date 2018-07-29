@@ -3,17 +3,9 @@ from django.utils import timezone
 import json
 from django.views.decorators.csrf import csrf_exempt
 import uuid
-import datetime
 from django.utils.dateparse import parse_datetime
 from django.contrib.gis.geos import Polygon
 from .MissionModel import Mission
-
-
-@csrf_exempt
-def getMissions(request):
-    now = datetime.datetime.now()
-    html = "<html><body>It is now %s.</body></html>" % now
-    return HttpResponse(html)
 
 @csrf_exempt
 def registerMissions(request):
