@@ -51,7 +51,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
-    'rest_framework',
     'icarus_backend'
 ]
 
@@ -63,6 +62,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'icarus_backend.middleware.DisableCSRF.DisableCSRF'
 ]
 
 ROOT_URLCONF = 'icarus_backend.urls'
@@ -94,15 +94,12 @@ DATABASES = {
     #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     # }
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'icarus_db',
         'USER': 'django_user',
         'PASSWORD': 'ignorance_is_strength_war_is_peace_ingsoc',
         'HOST': 'localhost',
         'PORT': '',
-        'TEST': {
-            'NAME': 'icarus_test_db'
-        }
     }
 
 }
