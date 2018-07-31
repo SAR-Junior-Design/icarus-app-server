@@ -100,6 +100,9 @@ DATABASES = {
         'PASSWORD': 'ignorance_is_strength_war_is_peace_ingsoc',
         'HOST': 'localhost',
         'PORT': '',
+        'TEST': {
+            'NAME': 'icarus_test_db'
+        }
     }
 
 }
