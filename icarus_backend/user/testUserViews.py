@@ -24,21 +24,21 @@ class UserViewTest(TestCase):
                                         password='12345')
 
     def test_login(self):
-        response = self.client.post(reverse('login'), json.dumps(login_info), content_type='application/json')
+        response = self.client.post(reverse('icarus login'), json.dumps(login_info), content_type='application/json')
         self.assertEqual(response.status_code, 200)
         self.assertIn('_auth_user_id', self.client.session)
 
 
     def test_logout(self):
-        response = self.client.post(reverse('login'), json.dumps(login_info), content_type='application/json')
+        response = self.client.post(reverse('icarus login'), json.dumps(login_info), content_type='application/json')
         self.assertEqual(response.status_code, 200)
         self.assertIn('_auth_user_id', self.client.session)
-        response = self.client.get(reverse('logout'))
+        response = self.client.get(reverse('icarus logout'))
         self.assertEqual(response.status_code, 200)
         self.assertNotIn('_auth_user_id', self.client.session)
 
     def test_register(self):
-        response = self.client.post(reverse('register user'), json.dumps(register_info), content_type='application/json')
+        response = self.client.post(reverse('icarus register user'), json.dumps(register_info), content_type='application/json')
         self.assertEqual(response.status_code, 200)
         user = authenticate(username=register_info['username'], password=register_info['password'])
         self.assertTrue(user)
@@ -47,5 +47,5 @@ class UserViewTest(TestCase):
         response = self.client.get(reverse('is logged in'))
         self.assertEqual(response.status_code, 200)
         self.assertFalse(json.loads(response.content.decode('utf-8')))
-        response = self.client.post(reverse('login'), json.dumps(login_info), content_type='application/json')
+        response = self.client.post(reverse('icarus login'), json.dumps(login_info), content_type='application/json')
         self.assertTrue(json.loads(response.content.decode('utf-8')))
