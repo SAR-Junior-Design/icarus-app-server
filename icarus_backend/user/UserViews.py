@@ -3,7 +3,6 @@ from rest_framework.decorators import api_view
 from django.http import HttpResponse
 import json
 from .UserService import UserService
-from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 
 
@@ -38,7 +37,7 @@ def icarus_register_user(request):
     email = body['email']
     user = authenticate(username=username, password=password)
     if user is None:
-        user = User.objects.create_user(username=username,
+        User.objects.create_user(username=username,
                                         email=email,
                                         password=password)
         response_data = {'message': 'User successfully registered.'}
@@ -75,7 +74,6 @@ def icarus_get_user(request):
         return HttpResponse(responseJson, content_type="application/json", status=401)
 
 
-@csrf_exempt
 @api_view(['GET'])
 def icarus_is_logged_in(request):
     if request.user.is_active:
