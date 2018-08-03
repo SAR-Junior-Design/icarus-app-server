@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
+    'guardian',
     'icarus_backend'
 ]
 
@@ -101,7 +102,14 @@ DATABASES = {
         'HOST': 'localhost',
         'PORT': '',
     }
-
+    # 'default': {
+    #     'ENGINE': 'django.contrib.gis.db.backends.postgis',
+    #     'NAME': 'icarus_db',
+    #     'USER': 'django_user',
+    #     'PASSWORD': 'ignorance_is_strength_war_is_peace_ingsoc',
+    #     'HOST': 'dev.icarusmap.com',
+    #     'PORT': '5432',
+    # }
 }
 
 # Password validation
@@ -121,6 +129,11 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend', # default
+    'guardian.backends.ObjectPermissionBackend',
+)
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/

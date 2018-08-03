@@ -1,27 +1,46 @@
 from django.http import HttpResponse
-from django.utils import timezone
 import json
-from django.views.decorators.csrf import csrf_exempt
 import uuid
+from django.utils.timezone import is_aware
 from django.utils.dateparse import parse_datetime
 from django.contrib.gis.geos import Polygon
 from .MissionModel import Mission
+from django.contrib.auth.decorators import login_required
+from guardian.shortcuts import assign_perm
 
-@csrf_exempt
-def registerMissions(request):
+
+@login_required
+def register_mission(request):
     body = json.loads(request.body)
     title = body['title']
-    type = body['type']
+    _type = body['type']
     description = body['description']
-    created_at = timezone.now()
-    starts_at = timezone.make_aware(parse_datetime(body['starts_at']))
-    ends_at = timezone.make_aware(parse_datetime(body['ends_at']))
+    starts_at = parse_datetime(body['starts_at'])
+    if not is_aware(starts_at):
+        response_data = {'message': 'Starts at has not timezone.'}
+        response_json = json.dumps(response_data)
+        return HttpResponse(response_json, status=403, content_type="application/json")
+    ends_at = parse_datetime(body['ends_at'])
+    if not is_aware(ends_at):
+        response_data = {'message': 'Ends at has no timezone.'}
+        response_json = json.dumps(response_data)
+        return HttpResponse(response_json, status=403, content_type="application/json")
     print(body['area']['features'][0]['geometry']['coordinates'])
-    area = Polygon(body['area']['features'][0]['geometry']['coordinates'] )
+    area = Polygon(body['area']['features'][0]['geometry']['coordinates'])
     mission_id = uuid.uuid4()
-    newMission = Mission(mission_id = mission_id, title = title, type = type, description = description,
-                         created_at = created_at, starts_at=starts_at, ends_at=ends_at, area = area)
-    newMission.save();
+    new_mission = Mission(mission_id=mission_id, title=title, type=_type, description=description,
+                          starts_at=starts_at, ends_at=ends_at, area=area)
+    new_mission.save()
+    user = request.user
+    assign_perm()
     response_data = {'message': 'Successfully registered the mission.'}
-    responseJson = json.dumps(response_data)
-    return HttpResponse(responseJson, content_type="application/json")
+    response_json = json.dumps(response_data)
+    return HttpResponse(response_json, content_type="application/json")
+
+
+def get_missions(request):
+    return 'todo'
+
+
+def delete_missions(request):
+    return 'todo'
