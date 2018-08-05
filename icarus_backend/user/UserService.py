@@ -10,4 +10,3 @@ class UserService:
             "last_name": user.last_name
         }
         return userInfo
-
