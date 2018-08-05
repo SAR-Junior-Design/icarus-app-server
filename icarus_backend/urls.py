@@ -20,5 +20,6 @@ from django.contrib.auth import views as auth_views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('mission/', include('icarus_backend.mission.MissionUrls')),
-    path('accounts/', include('django.contrib.auth.urls'))
+    path('accounts/', include('django.contrib.auth.urls')),
+    path('clearance/', include('icarus_backend.clearance.ClearanceUrls'))
 ]
