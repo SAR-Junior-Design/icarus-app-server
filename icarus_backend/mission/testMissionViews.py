@@ -1,6 +1,5 @@
 from django.test import TestCase
 from django.urls import reverse
-from django.utils import timezone
 from django.contrib.gis.geos import Polygon
 from django.utils.dateparse import parse_datetime
 from django.contrib.auth.models import User
@@ -88,6 +87,10 @@ class MissionViewTest(TestCase):
                                     content_type='application/json')
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(Mission.objects.get(title=register_info_2['title']))
+        user = User.objects.get(username='user1', email='e@mail.com')
+        new_mission = Mission.objects.get(username=register_info_2['username'])
+        self.assertTrue(user.has_perm('read_mission', user, new_mission))
+        self.assertTrue(user.has_perm('write_mission', user, new_mission))
 
     def test_get_missions(self):
         response = self.client.post(reverse('icarus login'), json.dumps(login_info),

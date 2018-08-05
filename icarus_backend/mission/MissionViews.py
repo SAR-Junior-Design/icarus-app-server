@@ -32,7 +32,8 @@ def register_mission(request):
                           starts_at=starts_at, ends_at=ends_at, area=area)
     new_mission.save()
     user = request.user
-    assign_perm()
+    assign_perm('read_mission', user, new_mission)
+    assign_perm('write_mission', user, new_mission)
     response_data = {'message': 'Successfully registered the mission.'}
     response_json = json.dumps(response_data)
     return HttpResponse(response_json, content_type="application/json")

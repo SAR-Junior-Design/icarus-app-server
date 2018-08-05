@@ -14,6 +14,6 @@ class Mission(models.Model):
 
     class Meta:
         permissions = (
-            ('read_mission', 'Read mission'),
+            ('reae_mission', 'Read mission'),
             ('write_mission', 'Write mission')
         )

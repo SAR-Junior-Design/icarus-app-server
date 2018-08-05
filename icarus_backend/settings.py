@@ -94,22 +94,22 @@ DATABASES = {
     #     'ENGINE': 'django.db.backends.sqlite3',
     #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     # }
-    'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'icarus_db',
-        'USER': 'django_user',
-        'PASSWORD': 'ignorance_is_strength_war_is_peace_ingsoc',
-        'HOST': 'localhost',
-        'PORT': '',
-    }
     # 'default': {
     #     'ENGINE': 'django.contrib.gis.db.backends.postgis',
     #     'NAME': 'icarus_db',
     #     'USER': 'django_user',
     #     'PASSWORD': 'ignorance_is_strength_war_is_peace_ingsoc',
-    #     'HOST': 'dev.icarusmap.com',
-    #     'PORT': '5432',
+    #     'HOST': 'localhost',
+    #     'PORT': '',
     # }
+    'default': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': 'icarus_db',
+        'USER': 'django_user',
+        'PASSWORD': 'ignorance_is_strength_war_is_peace_ingsoc',
+        'HOST': 'dev.icarusmap.com',
+        'PORT': '5432',
+    }
 }
 
 # Password validation
