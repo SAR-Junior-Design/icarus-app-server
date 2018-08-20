@@ -66,15 +66,15 @@ login_info = {
 class MissionViewTest(TestCase):
 
     def setUp(self):
-        User.objects.create_user(username='user1',
+        user = User.objects.create_user(username='user1',
                                  email='e@mail.com',
                                  password='12345')
         area_polygon = Polygon(area['features'][0]['geometry']['coordinates'])
         starts_at = parse_datetime(register_info['starts_at'])
         ends_at = parse_datetime(register_info['ends_at'])
-        Mission.objects.create(mission_id=1, title=register_info['title'], area=area_polygon,
+        Mission.objects.create(id=1, title=register_info['title'], area=area_polygon,
                                description=register_info['description'], starts_at=starts_at,
-                               ends_at=ends_at, type=register_info['type'])
+                               ends_at=ends_at, type=register_info['type'], created_by=user)
 
     def test_register_mission(self):
         response = self.client.post(reverse('register mission'), json.dumps(register_info_2),
@@ -87,16 +87,21 @@ class MissionViewTest(TestCase):
                                     content_type='application/json')
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(Mission.objects.get(title=register_info_2['title']))
-        user = User.objects.get(username='user1', email='e@mail.com')
-        new_mission = Mission.objects.get(username=register_info_2['username'])
-        self.assertTrue(user.has_perm('read_mission', user, new_mission))
-        self.assertTrue(user.has_perm('write_mission', user, new_mission))
 
     def test_get_missions(self):
         response = self.client.post(reverse('icarus login'), json.dumps(login_info),
                                     content_type='application/json')
         self.assertEqual(response.status_code, 200)
-        # response = self.client.get(reverse('get missions'))
+        response = self.client.get(reverse('get missions'))
+        response = json.loads(response.content)
+        self.assertEqual(response[0]['title'], 'Venezuela')
 
     def test_delete_missions(self):
-        return 'TODO'
+        response = self.client.post(reverse('icarus login'), json.dumps(login_info),
+                                    content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        delete_mission_json = {'mission_id': '1'}
+        response = self.client.post(reverse('delete missions'), json.dumps(delete_mission_json),
+                                    content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+

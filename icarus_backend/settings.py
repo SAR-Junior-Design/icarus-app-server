@@ -10,7 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
-import os
+import os, sys
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -51,8 +51,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
-    'guardian',
-    'icarus_backend'
+    'icarus_backend',
+    'djgeojson'
 ]
 
 MIDDLEWARE = [
@@ -94,22 +94,22 @@ DATABASES = {
     #     'ENGINE': 'django.db.backends.sqlite3',
     #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     # }
-    # 'default': {
-    #     'ENGINE': 'django.contrib.gis.db.backends.postgis',
-    #     'NAME': 'icarus_db',
-    #     'USER': 'django_user',
-    #     'PASSWORD': 'ignorance_is_strength_war_is_peace_ingsoc',
-    #     'HOST': 'localhost',
-    #     'PORT': '',
-    # }
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'icarus_db',
         'USER': 'django_user',
         'PASSWORD': 'ignorance_is_strength_war_is_peace_ingsoc',
-        'HOST': 'dev.icarusmap.com',
-        'PORT': '5432',
+        'HOST': 'localhost',
+        'PORT': '',
     }
+    # 'default': {
+    #     'ENGINE': 'django.contrib.gis.db.backends.postgis',
+    #     'NAME': 'icarus_db',
+    #     'USER': 'django_user',
+    #     'PASSWORD': 'ignorance_is_strength_war_is_peace_ingsoc',
+    #     'HOST': 'dev.icarusmap.com',
+    #     'PORT': '5432',
+    # }
 }
 
 # Password validation
@@ -131,7 +131,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend', # default
+    'django.contrib.auth.backends.ModelBackend',  # default
     'guardian.backends.ObjectPermissionBackend',
 )
 
