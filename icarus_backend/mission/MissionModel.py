@@ -1,5 +1,6 @@
 from django.contrib.gis.db import models
 from django.contrib.gis.geos import Polygon
+from icarus_backend.clearance.ClearanceModel import Clearance
 
 class Mission(models.Model):
     mission_id = models.TextField(primary_key=True)
@@ -10,4 +11,8 @@ class Mission(models.Model):
     created_at = models.DateTimeField()
     starts_at = models.DateTimeField()
     ends_at = models.DateTimeField()
-    #clearance
+    clearance = models.ForeignKey(Clearance,
+    	on_delete=models.SET_NULL,
+    	blank=True,
+    	null=True
+    )
