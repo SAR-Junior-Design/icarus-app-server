@@ -55,7 +55,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.gis',
     'icarus_backend',
-    'djgeojson'
+    'djgeojson',
+    'users'
 ]
 
 MIDDLEWARE = [
@@ -137,6 +138,8 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',  # default
     'guardian.backends.ObjectPermissionBackend',
 )
+
+AUTH_USER_MODEL = 'users.IcarusUser'
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/

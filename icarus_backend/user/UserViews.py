@@ -3,7 +3,7 @@ from rest_framework.decorators import api_view
 from django.http import HttpResponse
 import json
 from .UserService import UserService
-from django.contrib.auth.models import User
+from users.models import IcarusUser as User
 
 
 @api_view(['POST'])

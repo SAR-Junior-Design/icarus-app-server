@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.contrib.gis.geos import Polygon
 from django.utils.dateparse import parse_datetime
-from django.contrib.auth.models import User
+from users.models import IcarusUser as User
 from icarus_backend.mission.MissionModel import Mission
 from icarus_backend.drone.DroneModel import Drone
 from icarus_backend.assets.AssetModel import Asset
