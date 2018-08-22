@@ -10,7 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
-import os
+import os, sys
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -26,7 +26,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     "icarusmap.com",
-    "127.0.0.1"
+    "127.0.0.1",
+    "localhost",
+    "127.0.0.8000"
 ]
 
 ##CORS_ORIGIN_ALLOW_ALL=True
@@ -52,7 +54,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
-    'icarus_backend'
+    'icarus_backend',
+    'djgeojson'
 ]
 
 MIDDLEWARE = [
@@ -102,7 +105,14 @@ DATABASES = {
         'HOST': 'localhost',
         'PORT': '',
     }
-
+    # 'default': {
+    #     'ENGINE': 'django.contrib.gis.db.backends.postgis',
+    #     'NAME': 'icarus_db',
+    #     'USER': 'django_user',
+    #     'PASSWORD': 'ignorance_is_strength_war_is_peace_ingsoc',
+    #     'HOST': 'dev.icarusmap.com',
+    #     'PORT': '5432',
+    # }
 }
 
 # Password validation
@@ -122,6 +132,11 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',  # default
+    'guardian.backends.ObjectPermissionBackend',
+)
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
