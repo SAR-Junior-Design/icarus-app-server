@@ -4,8 +4,8 @@ import uuid
 from django.utils.timezone import is_aware
 from django.utils.dateparse import parse_datetime
 from django.contrib.gis.geos import Polygon
-from icarus_backend.mission.MissionModel import Mission
 from django.contrib.auth.decorators import login_required
+from .MissionModel import Mission
 
 
 @login_required
@@ -60,3 +60,23 @@ def delete_mission(request):
         response_data = {'message': 'User does not have permissions to delete mission.'}
         response_json = json.dumps(response_data)
         return HttpResponse(response_json, content_type="application/json", status=403)
+
+    
+def editClearance(request):
+    request = json.loads(request.body)
+    mission_id = request['mission_id']
+    created_by = request['created_by']
+    state = request['state']
+    message = request['message']
+
+    mission = Mission.objects.get(mission_id = mission_id)
+    object = mission.clearance
+    object.created_by = created_by
+    object.state = state
+    object.message = message
+    object.save()
+
+    response_data = {'message': 'Successfully edited the clearance.'}
+    responseJson = json.dumps(response_data)
+    return HttpResponse(responseJson, content_type="application/json")
+
