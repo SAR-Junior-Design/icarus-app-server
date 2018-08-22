@@ -4,6 +4,8 @@ from django.contrib.gis.geos import Polygon
 from django.utils.dateparse import parse_datetime
 from django.contrib.auth.models import User
 from icarus_backend.mission.MissionModel import Mission
+from icarus_backend.drone.DroneModel import Drone
+from icarus_backend.assets.AssetModel import Asset
 from datetime import datetime, timedelta
 from django.utils import timezone
 
@@ -149,4 +151,22 @@ class MissionViewTest(TestCase):
         mission = Mission.objects.filter(pk=1).first()
         self.assertEqual(mission.title, 'South Georgia')
         self.assertEqual(mission.description, 'Looking for someone in South Georgia')
+        self.assertEqual(response.status_code, 200)
+
+    def test_add_drone_to_mission(self):
+        ri = {
+            "description": "fixed-wing, 4\" blades",
+            "manufacturer": "DJI",
+            "type": "quadrotor",
+            "color": "Green"
+        }
+        user = User.objects.filter(username='user1').first()
+        Drone.objects.create(id=1, description=ri['description'], manufacturer=ri['manufacturer'],
+                             type=ri['type'], color=ri['color'], owner=user)
+        response = self.client.post(reverse('icarus login'), json.dumps(login_info),
+                                    content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        add_drone_to_mission = { 'drone_id': '1', 'mission_id': '1'}
+        response = self.client.post(reverse('add drone to mission'), json.dumps(add_drone_to_mission),
+                                    content_type='application/json')
         self.assertEqual(response.status_code, 200)

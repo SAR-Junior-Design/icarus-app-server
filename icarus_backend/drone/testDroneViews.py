@@ -62,3 +62,12 @@ class DroneViewTest(TestCase):
         user = User.objects.filter(username='user1').first()
         drones = Drone.objects.filter(owner=user)
         self.assertEqual(len(drones), 2)
+
+    def test_get_drones_past_missions(self):
+        response = self.client.post(reverse('icarus login'), json.dumps(login_info),
+                                    content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        gdpm_json = {'drone_id': '1', 'mission_id': '1'}
+        response = self.client.post(reverse('get drones past missions'), json.dumps(gdpm_json),
+                                    content_type='application/json')
+        self.assertEqual(response.status_code, 200)

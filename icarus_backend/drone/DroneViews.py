@@ -1,6 +1,7 @@
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from .DroneModel import Drone
+from icarus_backend.assets.AssetModel import Asset
 import json, uuid
 
 
@@ -23,7 +24,11 @@ def delete_drone(request):
 
 @login_required
 def get_drones_past_missions(request):
-    pass
+    body = json.loads(request.body)
+    drone = Drone.objects.filter(id=body['drone_id']).first()
+    assets = Asset.objects.filter(drone=drone)
+    dictionaries = [obj.as_dict() for obj in assets]
+    return HttpResponse(json.dumps(dictionaries), content_type='application/json')
 
 
 @login_required
