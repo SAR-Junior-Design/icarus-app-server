@@ -21,5 +21,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('clearance/', include('icarus_backend.clearance.ClearanceUrls')),
     path('user/', include('icarus_backend.user.UserUrls')),
-    path('mission/', include('icarus_backend.mission.MissionUrls'))
+    path('mission/', include('icarus_backend.mission.MissionUrls')),
+    path('drone/', include('icarus_backend.drone.DroneUrls'))
 ]

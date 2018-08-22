@@ -6,6 +6,8 @@ from django.utils.dateparse import parse_datetime
 from django.contrib.gis.geos import Polygon
 from django.contrib.auth.decorators import login_required
 from .MissionModel import Mission
+from icarus_backend.assets.AssetModel import Asset
+from icarus_backend.drone.DroneModel import Drone
 from django.utils import timezone
 
 
@@ -102,15 +104,16 @@ def edit_mission_details(request):
     response_json = json.dumps(response_data)
     return HttpResponse(response_json, content_type="application/json", status=200)
 
+
 @login_required()
 def edit_clearance(request):
-    request = json.loads(request.body)
-    mission_id = request['mission_id']
-    created_by = request['created_by']
-    state = request['state']
-    message = request['message']
+    body = json.loads(request.body)
+    mission_id = body['mission_id']
+    created_by = body['created_by']
+    state = body['state']
+    message = body['message']
 
-    mission = Mission.objects.get(mission_id = mission_id)
+    mission = Mission.objects.get(mission_id=mission_id)
     object = mission.clearance
     object.created_by = created_by
     object.state = state
@@ -118,6 +121,28 @@ def edit_clearance(request):
     object.save()
 
     response_data = {'message': 'Successfully edited the clearance.'}
-    responseJson = json.dumps(response_data)
-    return HttpResponse(responseJson, content_type="application/json")
+    response_json = json.dumps(response_data)
+    return HttpResponse(response_json, content_type="application/json")
 
+
+@login_required()
+def add_drone_to_mission(request):
+    body = json.loads(request.body)
+    drone = Drone.objects.filter(id=body['drone_id']).first()
+    mission = Mission.objects.filter(id=body['mission_id']).first()
+    asset = Asset(drone=drone, mission=mission, operator=request.user)
+    asset.save()
+    response_data = {'message': 'Successfully added drone to mission.'}
+    response_json = json.dumps(response_data)
+    return HttpResponse(response_json, content_type="application/json")
+
+@login_required()
+def remove_drone_from_mission(request):
+    body = json.loads(request.body)
+    drone = Drone.objects.filter(id=body['drone_id']).first()
+    mission = Mission.objects.filter(id=body['mission_id']).first()
+    asset = Asset.objects.filter(drone=drone, mission=mission).first()
+    asset.delete()
+    response_data = {'message': 'Successfully removed drone from mission.'}
+    response_json = json.dumps(response_data)
+    return HttpResponse(response_json, content_type="application/json")

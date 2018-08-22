@@ -25,6 +25,7 @@ SECRET_KEY = 'zcr39#y7%e9a$r+n=72uw6@2k_o*fw-)so&fl&@_+1v0v+@in@'
 DEBUG = True
 
 ALLOWED_HOSTS = [
+    "icarusmap.com",
     "127.0.0.1",
     "localhost",
     "127.0.0.8000"
@@ -32,7 +33,7 @@ ALLOWED_HOSTS = [
 
 ##CORS_ORIGIN_ALLOW_ALL=True
 
-CSRF_COOKIE_DOMAIN = "127.0.0.1"
+CSRF_COOKIE_DOMAIN = "icarusmap.com"
 
 CORS_ALLOW_CREDENTIALS = True
 
