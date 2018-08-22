@@ -1,49 +1,39 @@
 from django.http import HttpResponse
-from django.utils import timezone
-import json
-from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 from .DroneModel import Drone
-import uuid
-from django.utils.dateparse import parse_datetime
-from django.contrib.gis.geos import Polygon
+import json, uuid
 
 
-@csrf_exempt
+@login_required
 def get_user_drones(request):
-    if request.method == 'GET':
-
-        user_object = request.user
-
-
-        json_array = []
-        for drone in user_drones:
-            dron_json = {}
-            dron_json["owner"] = drone.owner.username
-            dron_json["drone_id"] = drone.drone_id
-            dron_json["description"] = drone.description
-            dron_json[""]
-
-            # owner = models.ForeignKey(User, on_delete=models.CASCADE)
-            # drone_id = models.TextField()
-            # description = models.TextField()
-            # manufacturer = models.TextField()
-            # drone_type = models.CharField()
-            # color = models.CharField()
-            # created_at = models.DateTimeField()
+    drones = Drone.objects.filter(owner=request.user)
+    dictionaries = [obj.as_dict() for obj in drones]
+    return HttpResponse(json.dumps(dictionaries), content_type='application/json')
 
 
-
-
-    pass
-
-@csrf_exempt
+@login_required
 def delete_drone(request):
-    pass
+    body = json.loads(request.body)
+    drone_id = body['drone_id']
+    drones = Drone.objects.filter(id=drone_id).first()
+    drones.delete()
+    response_data = {'message': 'Drone successfully deleted.'}
+    return HttpResponse(json.dumps(response_data), content_type='application/json')
 
-@csrf_exempt
+
+@login_required
 def get_drones_past_missions(request):
     pass
 
-@csrf_exempt
-def register_drone():
-   pass
+
+@login_required
+def register_drone(request):
+    body = json.loads(request.body)
+    drone_id = uuid.uuid4()
+    new_drone = Drone(id=drone_id, owner=request.user, description=body['description'],
+                      manufacturer=body['manufacturer'], type=body['type'],
+                      color=body['color'])
+    new_drone.save()
+    response_data = {'message': 'Successfully registered this drone.'}
+    response_json = json.dumps(response_data)
+    return HttpResponse(response_json, content_type="application/json")

@@ -21,7 +21,6 @@ class Mission(models.Model):
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     # clearance
 
-
     def as_dict(self):
         return {
             "id": self.id,

@@ -1,9 +1,8 @@
 from .DroneModel import Drone
 from django.contrib.auth.models import User
-from .DroneDTO import DroneDTO
+
 
 class DroneController:
-
 
     @staticmethod
     def get_user_drones(user_object:User):
