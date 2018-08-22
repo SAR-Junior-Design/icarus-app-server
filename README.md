@@ -4,6 +4,19 @@ This is the Application Server of the Icarus Drone management system.
 
 ## Setup
 
+### Postgres
+
+Most of the data in our server is stored in postgres. This is how you can setup a postgres database with all of the bells and whistles we need.
+
+First, download postgres:
+
+`sudo apt-get install postgres`
+
+Then enter the database via `psql postgres`.
+
+`create user django_user`
+grant 
+
 ### Geodjango
 
 This application server uses Postgis to maintain geolocated data.

@@ -23,6 +23,7 @@ user_info = {
     "last_name": ""
 }
 
+
 class UserViewTest(TestCase):
 
     def setUp(self):
@@ -34,7 +35,6 @@ class UserViewTest(TestCase):
         response = self.client.post(reverse('icarus login'), json.dumps(login_info), content_type='application/json')
         self.assertEqual(response.status_code, 200)
         self.assertIn('_auth_user_id', self.client.session)
-
 
     def test_logout(self):
         response = self.client.post(reverse('icarus login'), json.dumps(login_info), content_type='application/json')
