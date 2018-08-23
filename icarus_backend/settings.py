@@ -43,7 +43,9 @@ CORS_ORIGIN_WHITELIST = (
     'google.com',
     'hostname.example.com',
     'localhost:8000',
-    '127.0.0.1'
+    '127.0.0.1',
+    'devapi.icarusmap.com',
+    'api.icarusmap.com'
 )
 
 # Application definition
