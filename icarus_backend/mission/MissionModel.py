@@ -26,11 +26,33 @@ class Mission(models.Model):
             "id": self.id,
             "title": self.title,
             "created_at": self.created_at.isoformat(),
-            "area": self.area[0].coords,
+            "area": self.get_area(),
             "starts_at": self.starts_at.isoformat(),
             "ends_at": self.ends_at.isoformat(),
             "created_by": self.created_by.id,
-            "description": self.description
+            "description": self.description,
+            "clearance": self.get_clearance()
         }
 
+    def get_area(self):
+        return {
+            'features': [
+                {
+                    'geometry': {
+                        'coordinates': self.area[0].coords
+                    }
+                }
+            ]
+        }
 
+    def get_clearance(self):
+        if self.clearance is not None:
+            return {
+                'state': self.clearance.state,
+                'message': self.clearance.message
+            }
+        else:
+            return {
+                'state': 'PENDING',
+                'message': ''
+            }

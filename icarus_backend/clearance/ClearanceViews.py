@@ -12,7 +12,7 @@ def add_clearance(request):
     message = request['message']
     state = request['state']
     date = timezone.now()
-    object = Clearance(clearance_id = clearance_id, created_by = created_by, message = message, state = state, date = date)
+    object = Clearance(clearance_id=clearance_id, created_by = created_by, message = message, state = state, date = date)
     object.save()
 
     response_data = {'message': 'Successfully added clearance.'}
