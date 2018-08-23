@@ -65,8 +65,7 @@ def icarus_logout(request):
 @api_view(['GET'])
 def icarus_get_user(request):
     if request.user.is_active:
-        userInfo= UserService.user_info(request.user)
-        responseJson = json.dumps(userInfo)
+        responseJson = json.dumps(request.user.as_dict())
         return HttpResponse(responseJson, content_type="application/json", status=200)
     else:
         response_data = {'message': 'Already logged out.'}

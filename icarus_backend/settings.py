@@ -43,10 +43,14 @@ CORS_ORIGIN_WHITELIST = (
     'google.com',
     'hostname.example.com',
     'localhost:8000',
+    'localhost',
+    '127.0.0.1:8000',
     '127.0.0.1',
     'devapi.icarusmap.com',
     'api.icarusmap.com'
 )
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 # Application definition
 
@@ -62,6 +66,7 @@ INSTALLED_APPS = [
     'djgeojson',
     'rest_framework',
     'users',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -73,6 +78,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'icarus_backend.middleware.DisableCSRF.DisableCSRF',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'corsheaders.middleware.CorsPostCsrfMiddleware'
 ]
 
 ROOT_URLCONF = 'icarus_backend.urls'
