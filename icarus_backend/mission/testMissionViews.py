@@ -5,8 +5,7 @@ from django.utils.dateparse import parse_datetime
 from users.models import IcarusUser as User
 from icarus_backend.mission.MissionModel import Mission
 from icarus_backend.drone.DroneModel import Drone
-from icarus_backend.assets.AssetModel import Asset
-from datetime import datetime, timedelta
+from datetime import timedelta
 from django.utils import timezone
 
 import json
