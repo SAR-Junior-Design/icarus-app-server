@@ -1,6 +1,6 @@
 from django.contrib.gis.db import models
 from django.utils import timezone
-from django.contrib.auth.models import User
+from users.models import IcarusUser as User
 from icarus_backend.clearance.ClearanceModel import Clearance
 
 

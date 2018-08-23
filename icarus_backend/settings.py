@@ -28,7 +28,9 @@ ALLOWED_HOSTS = [
     "icarusmap.com",
     "127.0.0.1",
     "localhost",
-    "127.0.0.8000"
+    "127.0.0.8000",
+    "0.0.0.0:8000",
+    "0.0.0.0"
 ]
 
 ##CORS_ORIGIN_ALLOW_ALL=True
@@ -41,7 +43,9 @@ CORS_ORIGIN_WHITELIST = (
     'google.com',
     'hostname.example.com',
     'localhost:8000',
-    '127.0.0.1'
+    '127.0.0.1',
+    'devapi.icarusmap.com',
+    'api.icarusmap.com'
 )
 
 # Application definition
@@ -55,7 +59,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.gis',
     'icarus_backend',
-    'djgeojson'
+    'djgeojson',
+    'rest_framework',
+    'users',
 ]
 
 MIDDLEWARE = [
@@ -66,7 +72,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'icarus_backend.middleware.DisableCSRF.DisableCSRF'
+    'icarus_backend.middleware.DisableCSRF.DisableCSRF',
 ]
 
 ROOT_URLCONF = 'icarus_backend.urls'
@@ -137,6 +143,8 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',  # default
     'guardian.backends.ObjectPermissionBackend',
 )
+
+AUTH_USER_MODEL = 'users.IcarusUser'
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/

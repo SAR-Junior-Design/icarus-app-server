@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 import json
 
-from django.contrib.auth.models import User
+from users.models import IcarusUser as User
 from django.contrib.auth import authenticate
 
 login_info = {
