@@ -56,7 +56,8 @@ INSTALLED_APPS = [
     'django.contrib.gis',
     'icarus_backend',
     'djgeojson',
-    'users'
+    'rest_framework',
+    'users',
 ]
 
 MIDDLEWARE = [
@@ -67,7 +68,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'icarus_backend.middleware.DisableCSRF.DisableCSRF'
+    'icarus_backend.middleware.DisableCSRF.DisableCSRF',
 ]
 
 ROOT_URLCONF = 'icarus_backend.urls'
