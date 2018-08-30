@@ -1,18 +1,18 @@
 from django.http import HttpResponse
-from django.contrib.auth.decorators import login_required
+from oauth2_provider.decorators import protected_resource
 from .DroneModel import Drone
 from icarus_backend.assets.AssetModel import Asset
 import json, uuid
 
 
-@login_required
+@protected_resource()
 def get_user_drones(request):
     drones = Drone.objects.filter(owner=request.user)
     dictionaries = [obj.as_dict() for obj in drones]
     return HttpResponse(json.dumps(dictionaries), content_type='application/json')
 
 
-@login_required
+@protected_resource()
 def delete_drone(request):
     body = json.loads(request.body)
     drone_id = body['drone_id']
@@ -22,7 +22,7 @@ def delete_drone(request):
     return HttpResponse(json.dumps(response_data), content_type='application/json')
 
 
-@login_required
+@protected_resource()
 def get_drones_past_missions(request):
     body = json.loads(request.body)
     drone = Drone.objects.filter(id=body['drone_id']).first()
@@ -31,7 +31,7 @@ def get_drones_past_missions(request):
     return HttpResponse(json.dumps(dictionaries), content_type='application/json')
 
 
-@login_required
+@protected_resource()
 def register_drone(request):
     body = json.loads(request.body)
     drone_id = uuid.uuid4()

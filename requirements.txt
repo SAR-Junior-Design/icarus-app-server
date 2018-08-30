@@ -10,3 +10,4 @@ django-filter
 django-guardian
 django-extensions
 django-geojson
+django-oauth-toolkit
