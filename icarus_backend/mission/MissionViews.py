@@ -13,7 +13,7 @@ from oauth2_provider.decorators import protected_resource
 
 @protected_resource()
 def register_mission(request):
-    body = json.loads(request.body)
+    body = request.data
     title = body['title']
     _type = body['type']
     description = body['description']
@@ -77,7 +77,7 @@ def get_current_missions(request):
 
 @protected_resource()
 def delete_mission(request):
-    body = json.loads(request.body)
+    body = request.data
     mission_id = body['mission_id']
     mission_query = Mission.objects.filter(pk=mission_id)
     if len(mission_query) == 0:
@@ -98,7 +98,7 @@ def delete_mission(request):
 
 @protected_resource()
 def edit_mission_details(request):
-    body = json.loads(request.body)
+    body = request.data
     mission_id = body['mission_id']
     mission = Mission.objects.filter(pk=mission_id).first()
     if 'title' in body.keys():
@@ -113,7 +113,7 @@ def edit_mission_details(request):
 
 @protected_resource()
 def edit_clearance(request):
-    body = json.loads(request.body)
+    body = request.data
     mission_id = body['mission_id']
     created_by = body['created_by']
     state = body['state']
@@ -133,7 +133,7 @@ def edit_clearance(request):
 
 @protected_resource()
 def add_drone_to_mission(request):
-    body = json.loads(request.body)
+    body = request.data
     drone = Drone.objects.filter(id=body['drone_id']).first()
     mission = Mission.objects.filter(id=body['mission_id']).first()
     asset = Asset(drone=drone, mission=mission, operator=request.user)
@@ -145,7 +145,7 @@ def add_drone_to_mission(request):
 
 @protected_resource()
 def remove_drone_from_mission(request):
-    body = json.loads(request.body)
+    body = request.data
     drone = Drone.objects.filter(id=body['drone_id']).first()
     mission = Mission.objects.filter(id=body['mission_id']).first()
     asset = Asset.objects.filter(drone=drone, mission=mission).first()
