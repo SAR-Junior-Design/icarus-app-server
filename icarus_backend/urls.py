@@ -16,10 +16,16 @@ Including another URLconf
 from django.contrib import admin
 
 from django.urls import path, include
+from django.conf.urls import url
+
+from icarus_backend.cors.CorsModel import CorsModel
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('clearance/', include('icarus_backend.clearance.ClearanceUrls')),
     path('user/', include('icarus_backend.user.UserUrls')),
-    path('mission/', include('icarus_backend.mission.MissionUrls'))
+    path('mission/', include('icarus_backend.mission.MissionUrls')),
+    path('drone/', include('icarus_backend.drone.DroneUrls')),
+    path('official/', include('icarus_backend.government_official.GovernmentOfficialUrls')),
+    url(r'^o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
 ]
