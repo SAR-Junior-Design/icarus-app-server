@@ -154,6 +154,13 @@ class MissionViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_edit_clearance(self):
-        rresponse = self.client.post(reverse('icarus login'), json.dumps(login_info),
+        response = self.client.post(reverse('icarus login'), json.dumps(login_info),
                                     content_type='application/json')
         self.assertEqual(response.status_code, 200)
+        edit_request = {'mission_id':'1', 'created_by':'bob', 'state':'not pending', 'message':'bye bye'}
+        response = self.client.post(reverse('edit clearance'), json.dumps(edit_request), content_type='application/json')
+        clearance = Clearance.objects.get(clearance_id='0')
+        self.assertEqual(clearance.created_by, 'bob')
+        self.assertEqual(clearance.state, 'not pending')
+        self.assertEqual(clearance.message, 'bye bye')
+
