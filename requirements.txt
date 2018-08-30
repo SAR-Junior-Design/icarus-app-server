@@ -1,5 +1,4 @@
 Django
-channels
 psycopg2-binary
 django-cors-headers
 configparser==3.5.0

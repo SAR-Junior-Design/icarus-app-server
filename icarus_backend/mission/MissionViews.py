@@ -9,9 +9,11 @@ from icarus_backend.assets.AssetModel import Asset
 from icarus_backend.drone.DroneModel import Drone
 from django.utils import timezone
 from oauth2_provider.decorators import protected_resource
+from rest_framework.decorators import api_view
 
 
 @protected_resource()
+@api_view(['POST'])
 def register_mission(request):
     body = request.data
     title = body['title']
@@ -38,6 +40,7 @@ def register_mission(request):
 
 
 @protected_resource()
+@api_view(['GET'])
 def get_missions(request):
     user = request.user
     print(user)
@@ -47,6 +50,7 @@ def get_missions(request):
 
 
 @protected_resource()
+@api_view(['GET'])
 def get_upcoming_missions(request):
     user = request.user
     print(user)
@@ -59,6 +63,7 @@ def get_upcoming_missions(request):
 
 
 @protected_resource()
+@api_view(['GET'])
 def get_past_missions(request):
     _now = timezone.now()
     missions = Mission.objects.filter(created_by=request.user.id, ends_at__lt=_now)
@@ -67,6 +72,7 @@ def get_past_missions(request):
 
 
 @protected_resource()
+@api_view(['GET'])
 def get_current_missions(request):
     _now = timezone.now()
     missions = Mission.objects.filter(created_by=request.user.id, starts_at__lt=_now,
@@ -76,6 +82,7 @@ def get_current_missions(request):
 
 
 @protected_resource()
+@api_view(['POST'])
 def delete_mission(request):
     body = request.data
     mission_id = body['mission_id']
@@ -97,6 +104,7 @@ def delete_mission(request):
 
 
 @protected_resource()
+@api_view(['GET'])
 def edit_mission_details(request):
     body = request.data
     mission_id = body['mission_id']
@@ -112,6 +120,7 @@ def edit_mission_details(request):
 
 
 @protected_resource()
+@api_view(['GET'])
 def edit_clearance(request):
     body = request.data
     mission_id = body['mission_id']
@@ -132,6 +141,7 @@ def edit_clearance(request):
 
 
 @protected_resource()
+@api_view(['GET'])
 def add_drone_to_mission(request):
     body = request.data
     drone = Drone.objects.filter(id=body['drone_id']).first()
@@ -144,6 +154,7 @@ def add_drone_to_mission(request):
 
 
 @protected_resource()
+@api_view(['GET'])
 def remove_drone_from_mission(request):
     body = request.data
     drone = Drone.objects.filter(id=body['drone_id']).first()

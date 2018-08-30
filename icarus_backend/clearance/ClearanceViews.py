@@ -5,11 +5,13 @@ from django.core.serializers.json import DjangoJSONEncoder
 import json
 import uuid
 from oauth2_provider.decorators import protected_resource
+from rest_framework.decorators import api_view
 
 
 @protected_resource()
+@api_view(['POST'])
 def add_clearance(request):
-    request = json.loads(request.body)
+    request = request.data
     clearance_id = uuid.uuid4()
     created_by = request['created_by']
     message = request['message']
@@ -24,8 +26,9 @@ def add_clearance(request):
 
 
 @protected_resource()
+@api_view(['POST'])
 def remove_clearance(request):
-    request = json.loads(request.body)
+    request = request.data
     clearance_id = request['clearance_id'] 
     clearance = Clearance.objects.filter(clearance_id = clearance_id)
     clearance.delete()
@@ -37,7 +40,7 @@ def remove_clearance(request):
 
 @protected_resource()
 def get_clearance_by_clearance_id(request):
-    request = json.loads(request.body)
+    request = request.data
     clearance_id = request['clearance_id']
     clearances = Clearance.objects.filter(clearance_id = clearance_id)
     clearance_list = []
@@ -54,8 +57,9 @@ def get_clearance_by_clearance_id(request):
     response = json.dumps(clearance_list, cls=DjangoJSONEncoder)
     return HttpResponse(response, content_type = 'application/json')
 
+
 def get_clearance_by_created_by(request):
-    request = json.loads(request.body)
+    request = request.data
     created_by = request['created_by']
     clearances = Clearance.objects.filter(created_by = created_by)
     clearance_list = []
@@ -75,7 +79,7 @@ def get_clearance_by_created_by(request):
 
 @protected_resource()
 def get_clearance_by_state(request):
-    request = json.loads(request.body)
+    request = request.data
     state = request['state']
     clearances = Clearance.objects.filter(state = state)
     clearance_list = []
@@ -95,7 +99,7 @@ def get_clearance_by_state(request):
 
 @protected_resource()
 def get_clearance_by_date(request):
-    request = json.loads(request.body)
+    request = request.data
     date = request['date']
     clearances = Clearance.objects.filter(date = date)
 

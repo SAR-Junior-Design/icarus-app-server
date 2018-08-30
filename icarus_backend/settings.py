@@ -71,6 +71,8 @@ MIDDLEWARE = [
     'icarus_backend.middleware.DisableCSRF.DisableCSRF',
 ]
 
+ALLOWED_HOSTS = ['0.0.0.0']
+
 ROOT_URLCONF = 'icarus_backend.urls'
 
 TEMPLATES = [
