@@ -7,6 +7,7 @@ from icarus_backend.mission.MissionModel import Mission
 from icarus_backend.drone.DroneModel import Drone
 from datetime import timedelta
 from django.utils import timezone
+from icarus_backend.clearance.ClearanceModel import Clearance
 
 import json
 
@@ -75,9 +76,10 @@ class MissionViewTest(TestCase):
         area_polygon = Polygon(area['features'][0]['geometry']['coordinates'])
         starts_at = parse_datetime(register_info['starts_at'])
         ends_at = parse_datetime(register_info['ends_at'])
+        Clearance.objects.create(clearance_id=0, created_by = 'ray', state='pending', message ='hello', date = "2016-10-12T11:45:00+05:00")
         Mission.objects.create(id=1, title=register_info['title'], area=area_polygon,
                                description=register_info['description'], starts_at=starts_at,
-                               ends_at=ends_at, type=register_info['type'], created_by=user)
+                               ends_at=ends_at, type=register_info['type'], created_by=user, clearance = Clearance.objects.get(clearance_id=0))
 
     def test_register_mission(self):
         response = self.client.post(reverse('register mission'), json.dumps(register_info_2),
@@ -152,6 +154,17 @@ class MissionViewTest(TestCase):
         self.assertEqual(mission.description, 'Looking for someone in South Georgia')
         self.assertEqual(response.status_code, 200)
 
+    def test_edit_clearance(self):
+        response = self.client.post(reverse('icarus login'), json.dumps(login_info),
+                                    content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        edit_request = {'mission_id':'1', 'created_by':'bob', 'state':'not pending', 'message':'bye bye'}
+        response = self.client.post(reverse('edit clearance'), json.dumps(edit_request), content_type='application/json')
+        clearance = Clearance.objects.get(clearance_id='0')
+        self.assertEqual(clearance.created_by, 'bob')
+        self.assertEqual(clearance.state, 'not pending')
+        self.assertEqual(clearance.message, 'bye bye')
+
     def test_add_drone_to_mission(self):
         ri = {
             "description": "fixed-wing, 4\" blades",
@@ -169,3 +182,4 @@ class MissionViewTest(TestCase):
         response = self.client.post(reverse('add drone to mission'), json.dumps(add_drone_to_mission),
                                     content_type='application/json')
         self.assertEqual(response.status_code, 200)
+
