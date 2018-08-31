@@ -10,7 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
-import os, sys
+import os
+import sys
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -24,24 +25,9 @@ SECRET_KEY = 'zcr39#y7%e9a$r+n=72uw6@2k_o*fw-)so&fl&@_+1v0v+@in@'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    "127.0.0.1",
-    "localhost",
-    "127.0.0.8000"
-]
+ALLOWED_HOSTS = []
 
-##CORS_ORIGIN_ALLOW_ALL=True
-
-CSRF_COOKIE_DOMAIN = "127.0.0.1"
-
-CORS_ALLOW_CREDENTIALS = True
-
-CORS_ORIGIN_WHITELIST = (
-    'google.com',
-    'hostname.example.com',
-    'localhost:8000',
-    '127.0.0.1'
-)
+# SESSION_COOKIE_NAME = 'sessionid-icarus-session'
 
 # Application definition
 
@@ -54,18 +40,35 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.gis',
     'icarus_backend',
-    'djgeojson'
+    'djgeojson',
+    'rest_framework',
+    'users',
+    'oauth2_provider'
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+    )
+}
+
+OAUTH2_PROVIDER = {
+    # this is the list of available scopes
+    'SCOPES': {'read': 'Read scope', 'write': 'Write scope', 'groups': 'Access to your groups'},
+    'ACCESS_TOKEN_EXPIRE_SECONDS': 36000,
+}
+
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
+    'oauth2_provider.middleware.OAuth2TokenMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'icarus_backend.middleware.DisableCSRF.DisableCSRF'
+    'icarus_backend.middleware.DisableCSRF.DisableCSRF',
 ]
 
 ROOT_URLCONF = 'icarus_backend.urls'
@@ -134,8 +137,10 @@ AUTH_PASSWORD_VALIDATORS = [
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',  # default
-    'guardian.backends.ObjectPermissionBackend',
+    'oauth2_provider.backends.OAuth2Backend'
 )
+
+AUTH_USER_MODEL = 'users.IcarusUser'
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/

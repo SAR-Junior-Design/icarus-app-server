@@ -3,12 +3,12 @@ from rest_framework.decorators import api_view
 from django.http import HttpResponse
 import json
 from .UserService import UserService
-from django.contrib.auth.models import User
+from users.models import IcarusUser as User
 
 
 @api_view(['POST'])
 def icarus_login(request):
-    body = json.loads(request.body)
+    body = request.data
     username = body['username']
     password = body['password']
     user = authenticate(username=username, password=password)
@@ -31,7 +31,7 @@ def icarus_login(request):
 
 @api_view(['POST'])
 def icarus_register_user(request):
-    body = json.loads(request.body)
+    body = request.data
     username = body['username']
     password = body['password']
     email = body['email']

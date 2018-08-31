@@ -1,7 +1,5 @@
 from django.test import TestCase
 from django.urls import reverse
-from django.contrib.gis.geos import Polygon
-from django.utils.dateparse import parse_datetime
 from django.contrib.auth.models import User
 from icarus_backend.clearance.ClearanceModel import Clearance
 

@@ -4,7 +4,10 @@ from django.http import HttpResponse
 from django.core.serializers.json import DjangoJSONEncoder
 import json
 import uuid
+from oauth2_provider.decorators import protected_resource
 
+
+@protected_resource()
 def add_clearance(request):
     request = json.loads(request.body)
     clearance_id = uuid.uuid4()
@@ -19,6 +22,8 @@ def add_clearance(request):
     response_json = json.dumps(response_data, cls=DjangoJSONEncoder)
     return HttpResponse(response_json, content_type = "application/json")
 
+
+@protected_resource()
 def remove_clearance(request):
     request = json.loads(request.body)
     clearance_id = request['clearance_id'] 
@@ -29,6 +34,8 @@ def remove_clearance(request):
     response_json = json.dumps(response_data, cls=DjangoJSONEncoder)
     return HttpResponse(response_json, content_type = "application/json")
 
+
+@protected_resource()
 def get_clearance_by_clearance_id(request):
     request = json.loads(request.body)
     clearance_id = request['clearance_id']
@@ -65,6 +72,8 @@ def get_clearance_by_created_by(request):
     response = json.dumps(clearance_list, cls=DjangoJSONEncoder)
     return HttpResponse(response, content_type = 'application/json')
 
+
+@protected_resource()
 def get_clearance_by_state(request):
     request = json.loads(request.body)
     state = request['state']
@@ -83,6 +92,8 @@ def get_clearance_by_state(request):
     response = json.dumps(clearance_list, cls=DjangoJSONEncoder)
     return HttpResponse(response, content_type = 'application/json')
 
+
+@protected_resource()
 def get_clearance_by_date(request):
     request = json.loads(request.body)
     date = request['date']
