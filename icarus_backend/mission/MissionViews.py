@@ -43,7 +43,7 @@ def register_mission(request):
 
 
 @protected_resource()
-@api_view(['POST'])
+@api_view(['GET', 'POST'])
 def get_missions(request):
     user = request.user
     print(user)
