@@ -44,7 +44,8 @@ class Mission(models.Model):
             "ends_at": self.ends_at.isoformat(),
             "created_by": self.created_by.id,
             "description": self.description,
-            "commander_id": self.created_by.id
+            "commander_id": self.created_by.id,
+            "clearance": self.clearance.as_dict()
         }
 
 

@@ -7,6 +7,7 @@ from django.contrib.gis.geos import Polygon
 from .MissionModel import Mission
 from icarus_backend.assets.AssetModel import Asset
 from icarus_backend.drone.DroneModel import Drone
+from icarus_backend.clearance.ClearanceModel import Clearance
 from django.utils import timezone
 from oauth2_provider.decorators import protected_resource
 from rest_framework.decorators import api_view
@@ -34,8 +35,13 @@ def register_mission(request):
         coordinates += [coordinates[0]]
     area = Polygon(coordinates)
     mission_id = uuid.uuid4()
+    clearance_id = uuid.uuid4()
+    clearance = Clearance(clearance_id=clearance_id, created_by='', state='PENDING',
+                          message='')
+    clearance.save()
     new_mission = Mission(id=mission_id, title=title, type=_type, description=description,
-                          starts_at=starts_at, ends_at=ends_at, area=area, created_by=request.user)
+                          starts_at=starts_at, ends_at=ends_at, area=area, created_by=request.user,
+                          clearance=clearance)
     new_mission.save()
     response_data = {'message': 'Successfully registered the mission.'}
     response_json = json.dumps(response_data)
