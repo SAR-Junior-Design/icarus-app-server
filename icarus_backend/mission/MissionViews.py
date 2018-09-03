@@ -130,7 +130,7 @@ def edit_clearance(request):
     created_by = body['created_by']
     state = body['state']
     message = body['message']
-
+    mission = Mission.objects.get(id = mission_id)
     mission = Mission.objects.get(mission_id=mission_id)
     object = mission.clearance
     object.created_by = created_by
