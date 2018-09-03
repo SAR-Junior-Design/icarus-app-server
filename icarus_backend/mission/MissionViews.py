@@ -29,7 +29,10 @@ def register_mission(request):
         response_data = {'message': 'Ends at has no timezone.'}
         response_json = json.dumps(response_data)
         return HttpResponse(response_json, status=403, content_type="application/json")
-    area = Polygon(body['area']['features'][0]['geometry']['coordinates'])
+    coordinates = body['area']['features'][0]['geometry']['coordinates']
+    if coordinates[0] is not coordinates[-1]:
+        coordinates += [coordinates[0]]
+    area = Polygon(coordinates)
     mission_id = uuid.uuid4()
     new_mission = Mission(id=mission_id, title=title, type=_type, description=description,
                           starts_at=starts_at, ends_at=ends_at, area=area, created_by=request.user)
@@ -40,7 +43,7 @@ def register_mission(request):
 
 
 @protected_resource()
-@api_view(['GET'])
+@api_view(['POST'])
 def get_missions(request):
     user = request.user
     print(user)
