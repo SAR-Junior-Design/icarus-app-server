@@ -40,7 +40,8 @@ def icarus_register_user(request):
     if user is None:
         User.objects.create_user(username=username,
                                         email=email,
-                                        password=password)
+                                        password=password,
+                                        role='pilot')
         response_data = {'message': 'User successfully registered.'}
         responseJson = json.dumps(response_data)
         return HttpResponse(responseJson, content_type="application/json", status=200)

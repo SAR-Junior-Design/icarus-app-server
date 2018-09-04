@@ -36,7 +36,8 @@ def register_mission(request):
     area = Polygon(coordinates)
     mission_id = uuid.uuid4()
     clearance_id = uuid.uuid4()
-    clearance = Clearance(clearance_id=clearance_id, created_by='', state='PENDING',
+    print(request.user)
+    clearance = Clearance(clearance_id=clearance_id, created_by=request.user.username, state='PENDING',
                           message='')
     clearance.save()
     new_mission = Mission(id=mission_id, title=title, type=_type, description=description,
@@ -65,7 +66,25 @@ def get_mission_info(request):
 @api_view(['GET', 'POST'])
 def get_missions(request):
     user = request.user
-    print(user)
+    print(user.role)
+    if user.role == 'government_official':
+        return government_get_missions(request)
+    else:
+        return pilot_get_missions(request)
+
+
+def government_get_missions(request):
+    missions = Mission.objects.all()
+    dictionaries = []
+    for mission in missions:
+        mission_dict = mission.as_dict()
+        mission_dict['num_drones'] = Asset.objects.filter(mission=mission).count()
+        dictionaries += [mission_dict]
+
+    return HttpResponse(json.dumps(dictionaries), content_type='application/json')
+
+
+def pilot_get_missions(request):
     missions = Mission.objects.filter(created_by=request.user.id)
     dictionaries = []
     for mission in missions:
@@ -80,9 +99,6 @@ def get_missions(request):
 @api_view(['GET'])
 def get_upcoming_missions(request):
     user = request.user
-    print(user)
-    print(request.COOKIES)
-    print(request.__dict__)
     _now = timezone.now()
     missions = Mission.objects.filter(created_by=request.user.id, starts_at__gt=_now)
     dictionaries = [obj.as_dict() for obj in missions]
@@ -147,17 +163,15 @@ def edit_mission_details(request):
 
 
 @protected_resource()
-@api_view(['GET'])
+@api_view(['POST'])
 def edit_clearance(request):
     body = request.data
     mission_id = body['mission_id']
-    created_by = body['created_by']
     state = body['state']
     message = body['message']
-    mission = Mission.objects.get(id = mission_id)
-    mission = Mission.objects.get(mission_id=mission_id)
+    mission = Mission.objects.get(id=mission_id)
     object = mission.clearance
-    object.created_by = created_by
+    object.created_by = request.user.username
     object.state = state
     object.message = message
     object.save()
