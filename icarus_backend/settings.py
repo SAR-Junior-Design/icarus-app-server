@@ -38,6 +38,8 @@ ALLOWED_HOSTS = [
 # CORS_ORIGIN_ALLOW_ALL = True
 CORS_ORIGIN_WHITELIST = (
     'localhost:8080',
+    'dev.icarusmap.com',
+    'icarusmap.com'
 )
 
 # ACCESS_CONTROL_ALLOW_CREDENTIALS = True

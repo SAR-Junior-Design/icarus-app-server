@@ -3,9 +3,11 @@ from oauth2_provider.decorators import protected_resource
 from .DroneModel import Drone
 from icarus_backend.assets.AssetModel import Asset
 import json, uuid
+from rest_framework.decorators import api_view
 
 
 @protected_resource()
+@api_view(['GET'])
 def get_user_drones(request):
     drones = Drone.objects.filter(owner=request.user)
     dictionaries = [obj.as_dict() for obj in drones]
@@ -13,18 +15,20 @@ def get_user_drones(request):
 
 
 @protected_resource()
+@api_view(['POST'])
 def delete_drone(request):
-    body = json.loads(request.body)
-    drone_id = body['drone_id']
-    drones = Drone.objects.filter(id=drone_id).first()
+    body = request.data
+    drone_id_list = [d['id'] for d in body]
+    drones = Drone.objects.filter(id__in=drone_id_list).first()
     drones.delete()
     response_data = {'message': 'Drone successfully deleted.'}
     return HttpResponse(json.dumps(response_data), content_type='application/json')
 
 
 @protected_resource()
+@api_view(['POST'])
 def get_drones_past_missions(request):
-    body = json.loads(request.body)
+    body = request.data
     drone = Drone.objects.filter(id=body['drone_id']).first()
     assets = Asset.objects.filter(drone=drone)
     dictionaries = [obj.as_dict() for obj in assets]
@@ -32,8 +36,9 @@ def get_drones_past_missions(request):
 
 
 @protected_resource()
+@api_view(['POST'])
 def register_drone(request):
-    body = json.loads(request.body)
+    body = request.data
     drone_id = uuid.uuid4()
     new_drone = Drone(id=drone_id, owner=request.user, description=body['description'],
                       manufacturer=body['manufacturer'], type=body['type'],
