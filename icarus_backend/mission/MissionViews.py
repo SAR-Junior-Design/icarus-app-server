@@ -60,13 +60,19 @@ def get_mission_info(request):
     else:
         return HttpResponse(json.dumps(missions.as_dict()), content_type='application/json')
 
+
 @protected_resource()
 @api_view(['GET', 'POST'])
 def get_missions(request):
     user = request.user
     print(user)
     missions = Mission.objects.filter(created_by=request.user.id)
-    dictionaries = [obj.as_dict() for obj in missions]
+    dictionaries = []
+    for mission in missions:
+        mission_dict = mission.as_dict()
+        mission_dict['num_drones'] = Asset.objects.filter(mission=mission).count()
+        dictionaries += [mission_dict]
+
     return HttpResponse(json.dumps(dictionaries), content_type='application/json')
 
 
@@ -125,7 +131,7 @@ def delete_mission(request):
 
 
 @protected_resource()
-@api_view(['GET'])
+@api_view(['POST'])
 def edit_mission_details(request):
     body = request.data
     mission_id = body['mission_id']

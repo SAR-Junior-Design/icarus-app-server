@@ -4,6 +4,7 @@ from django.http import HttpResponse
 import json
 from .UserService import UserService
 from users.models import IcarusUser as User
+from oauth2_provider.decorators import protected_resource
 
 
 @api_view(['POST'])

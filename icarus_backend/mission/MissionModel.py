@@ -45,7 +45,8 @@ class Mission(models.Model):
             "created_by": self.created_by.id,
             "description": self.description,
             "commander_id": self.created_by.id,
-            "clearance": self.clearance.as_dict()
+            "clearance": self.clearance.as_dict(),
+            "type": self.type
         }
 
 
