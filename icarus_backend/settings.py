@@ -25,7 +25,25 @@ SECRET_KEY = 'zcr39#y7%e9a$r+n=72uw6@2k_o*fw-)so&fl&@_+1v0v+@in@'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'http://localhost:8080',
+    'dev.icarusmap.com',
+    'icarusmap.com',
+    'www.icarusmap.com',
+    '0.0.0.0:8000',
+    '0.0.0.0'
+]
+
+
+# CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_WHITELIST = (
+    'localhost:8080',
+    'dev.icarusmap.com',
+    'icarusmap.com'
+)
+
+# ACCESS_CONTROL_ALLOW_CREDENTIALS = True
+
 
 # SESSION_COOKIE_NAME = 'sessionid-icarus-session'
 
@@ -70,6 +88,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'icarus_backend.middleware.DisableCSRF.DisableCSRF',
 ]
+
+ALLOWED_HOSTS = ['0.0.0.0']
 
 ROOT_URLCONF = 'icarus_backend.urls'
 

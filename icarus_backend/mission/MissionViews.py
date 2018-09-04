@@ -7,11 +7,14 @@ from django.contrib.gis.geos import Polygon
 from .MissionModel import Mission
 from icarus_backend.assets.AssetModel import Asset
 from icarus_backend.drone.DroneModel import Drone
+from icarus_backend.clearance.ClearanceModel import Clearance
 from django.utils import timezone
 from oauth2_provider.decorators import protected_resource
+from rest_framework.decorators import api_view
 
 
 @protected_resource()
+@api_view(['POST'])
 def register_mission(request):
     body = request.data
     title = body['title']
@@ -27,10 +30,18 @@ def register_mission(request):
         response_data = {'message': 'Ends at has no timezone.'}
         response_json = json.dumps(response_data)
         return HttpResponse(response_json, status=403, content_type="application/json")
-    area = Polygon(body['area']['features'][0]['geometry']['coordinates'])
+    coordinates = body['area']['features'][0]['geometry']['coordinates']
+    if coordinates[0] is not coordinates[-1]:
+        coordinates += [coordinates[0]]
+    area = Polygon(coordinates)
     mission_id = uuid.uuid4()
+    clearance_id = uuid.uuid4()
+    clearance = Clearance(clearance_id=clearance_id, created_by='', state='PENDING',
+                          message='')
+    clearance.save()
     new_mission = Mission(id=mission_id, title=title, type=_type, description=description,
-                          starts_at=starts_at, ends_at=ends_at, area=area, created_by=request.user)
+                          starts_at=starts_at, ends_at=ends_at, area=area, created_by=request.user,
+                          clearance=clearance)
     new_mission.save()
     response_data = {'message': 'Successfully registered the mission.'}
     response_json = json.dumps(response_data)
@@ -38,6 +49,19 @@ def register_mission(request):
 
 
 @protected_resource()
+@api_view(['POST'])
+def get_mission_info(request):
+    body = request.data
+    mission_id = body['mission_id']
+    missions = Mission.objects.filter(id=mission_id).first()
+    if missions is None:
+        message = {"message": "No mission exists with that id."}
+        return HttpResponse(json.dumps(message), content_type='application/json')
+    else:
+        return HttpResponse(json.dumps(missions.as_dict()), content_type='application/json')
+
+@protected_resource()
+@api_view(['GET', 'POST'])
 def get_missions(request):
     user = request.user
     print(user)
@@ -47,6 +71,7 @@ def get_missions(request):
 
 
 @protected_resource()
+@api_view(['GET'])
 def get_upcoming_missions(request):
     user = request.user
     print(user)
@@ -59,6 +84,7 @@ def get_upcoming_missions(request):
 
 
 @protected_resource()
+@api_view(['GET'])
 def get_past_missions(request):
     _now = timezone.now()
     missions = Mission.objects.filter(created_by=request.user.id, ends_at__lt=_now)
@@ -67,6 +93,7 @@ def get_past_missions(request):
 
 
 @protected_resource()
+@api_view(['GET'])
 def get_current_missions(request):
     _now = timezone.now()
     missions = Mission.objects.filter(created_by=request.user.id, starts_at__lt=_now,
@@ -76,6 +103,7 @@ def get_current_missions(request):
 
 
 @protected_resource()
+@api_view(['POST'])
 def delete_mission(request):
     body = request.data
     mission_id = body['mission_id']
@@ -97,6 +125,7 @@ def delete_mission(request):
 
 
 @protected_resource()
+@api_view(['GET'])
 def edit_mission_details(request):
     body = request.data
     mission_id = body['mission_id']
@@ -112,6 +141,7 @@ def edit_mission_details(request):
 
 
 @protected_resource()
+@api_view(['GET'])
 def edit_clearance(request):
     body = request.data
     mission_id = body['mission_id']
@@ -132,6 +162,7 @@ def edit_clearance(request):
 
 
 @protected_resource()
+@api_view(['POST'])
 def add_drone_to_mission(request):
     body = request.data
     drone = Drone.objects.filter(id=body['drone_id']).first()
@@ -144,6 +175,7 @@ def add_drone_to_mission(request):
 
 
 @protected_resource()
+@api_view(['GET'])
 def remove_drone_from_mission(request):
     body = request.data
     drone = Drone.objects.filter(id=body['drone_id']).first()
@@ -153,3 +185,13 @@ def remove_drone_from_mission(request):
     response_data = {'message': 'Successfully removed drone from mission.'}
     response_json = json.dumps(response_data)
     return HttpResponse(response_json, content_type="application/json")
+
+
+@protected_resource()
+@api_view(['POST'])
+def get_mission_drones(request):
+    body = request.data
+    mission_id=body['mission_id']
+    drones = Drone.objects.filter(asset__mission=mission_id).all()
+    dictionaries = [obj.as_dict() for obj in drones]
+    return HttpResponse(json.dumps(dictionaries), content_type='application/json')

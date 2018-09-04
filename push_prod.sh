@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+rsync -avz /Users/samcrane/Documents/GitHub/icarus-app-server -e "ssh -i /Users/samcrane/Documents/GitHub/keys/7305Key.pem" ubuntu@34.238.115.176:/home/ubuntu/ --exclude *.pyc --exclude venv/
