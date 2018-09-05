@@ -4,6 +4,10 @@ This is the Application Server of the Icarus Drone management system.
 
 ## Setup
 
+### Python
+
+Python is currently v3.6, until 3.7 stabilizes a bit more.
+
 ### Postgres
 
 Most of the data in our server is stored in postgres. This is how you can setup a postgres database with all of the bells and whistles we need.

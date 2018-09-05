@@ -4,11 +4,10 @@ from django.http import HttpResponse
 import json
 from .UserService import UserService
 from users.models import IcarusUser as User
-from django.core.mail import EmailMessage
-from django.template.loader import render_to_string
 from users.tokens import account_activation_token
-from django.utils.encoding import force_bytes, force_text
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_text
+from django.utils.http import urlsafe_base64_decode
+from icarus_backend.user.tasks import send_verification_email
 from django.contrib.sites.shortcuts import get_current_site
 
 
@@ -48,7 +47,8 @@ def icarus_register_user(request):
                                         password=password,
                                         role='pilot')
         user.is_active = False
-        send_confirmation_email(request, user)
+        domain = get_current_site(request).domain
+        send_verification_email.delay(user.username, user.email, user.id, domain)
         user.save()
         response_data = {'message': 'User successfully registered.'}
         responseJson = json.dumps(response_data)
@@ -58,22 +58,6 @@ def icarus_register_user(request):
         responseJson = json.dumps(response_data)
         return HttpResponse(responseJson, content_type="application/json", status=403)
 
-
-def send_confirmation_email(request, user):
-    body = request.data
-    mail_subject = 'Activate your Icarus Account'
-    current_site = get_current_site(request)
-    print('user.id: ', user.id)
-    message = render_to_string('acc_active_email.html', {
-        'user': user,
-        'domain': current_site.domain,
-        'uid': urlsafe_base64_encode(force_bytes(user.id)).decode(),
-        'token': account_activation_token.make_token(user),
-    })
-    email = EmailMessage(
-        mail_subject, message, to=[body['email']]
-    )
-    email.send()
 
 
 @api_view(['GET'])
@@ -118,7 +102,7 @@ def activate(request, uidb64, token):
         user = User.objects.get(pk=int(uid))
     except(TypeError, ValueError, OverflowError, User.DoesNotExist):
         user = None
-    if user is not None and account_activation_token.check_token(user, token):
+    if user is not None and account_activation_token.check_token(user.username, token):
         user.is_active = True
         user.save()
         # return redirect('home')
