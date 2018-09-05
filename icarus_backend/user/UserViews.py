@@ -48,10 +48,10 @@ def icarus_register_user(request):
                                         password=password,
                                         role='pilot')
         user.is_active = False
+        send_confirmation_email(request, user)
         user.save()
         response_data = {'message': 'User successfully registered.'}
         responseJson = json.dumps(response_data)
-        send_confirmation_email(request)
         return HttpResponse(responseJson, content_type="application/json", status=200)
     else:
         response_data = {'message': 'User already exists.'}
@@ -59,15 +59,15 @@ def icarus_register_user(request):
         return HttpResponse(responseJson, content_type="application/json", status=403)
 
 
-def send_confirmation_email(request):
-    user = request.user
+def send_confirmation_email(request, user):
     body = request.data
     mail_subject = 'Activate your Icarus Account'
     current_site = get_current_site(request)
+    print('user.id: ', user.id)
     message = render_to_string('acc_active_email.html', {
         'user': user,
         'domain': current_site.domain,
-        'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
+        'uid': urlsafe_base64_encode(force_bytes(user.id)).decode(),
         'token': account_activation_token.make_token(user),
     })
     email = EmailMessage(
@@ -115,13 +115,12 @@ def icarus_is_logged_in(request):
 def activate(request, uidb64, token):
     try:
         uid = force_text(urlsafe_base64_decode(uidb64))
-        user = User.objects.get(pk=uid)
+        user = User.objects.get(pk=int(uid))
     except(TypeError, ValueError, OverflowError, User.DoesNotExist):
         user = None
     if user is not None and account_activation_token.check_token(user, token):
         user.is_active = True
         user.save()
-        login(request, user)
         # return redirect('home')
         return HttpResponse('Thank you for your email confirmation. Now you can login your account.')
     else:
