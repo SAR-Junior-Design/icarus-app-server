@@ -25,16 +25,6 @@ SECRET_KEY = 'zcr39#y7%e9a$r+n=72uw6@2k_o*fw-)so&fl&@_+1v0v+@in@'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    'http://localhost:8080',
-    'dev.icarusmap.com',
-    'icarusmap.com',
-    'www.icarusmap.com',
-    '0.0.0.0:8000',
-    '0.0.0.0'
-]
-
-
 # CORS_ORIGIN_ALLOW_ALL = True
 CORS_ORIGIN_WHITELIST = (
     'localhost:8080',
@@ -42,12 +32,12 @@ CORS_ORIGIN_WHITELIST = (
     'icarusmap.com'
 )
 
-# ACCESS_CONTROL_ALLOW_CREDENTIALS = True
-
-
-# SESSION_COOKIE_NAME = 'sessionid-icarus-session'
-
-# Application definition
+EMAIL_USE_SSL = False
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'imap.gmail.com'
+EMAIL_HOST_USER = 'samcrane8@gmail.com'
+EMAIL_HOST_PASSWORD = 'tbbkptgsqxsfiuwn'
+EMAIL_PORT = 587
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -88,8 +78,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'icarus_backend.middleware.DisableCSRF.DisableCSRF',
 ]
-
-ALLOWED_HOSTS = ['0.0.0.0']
 
 ROOT_URLCONF = 'icarus_backend.urls'
 
@@ -153,6 +141,18 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
+]
+
+ALLOWED_HOSTS = [
+    'localhost',
+    'localhost:8000',
+    '127.0.0.1',
+    '127.0.0.1:8000',
+    'dev.icarusmap.com',
+    'icarusmap.com',
+    'www.icarusmap.com',
+    '0.0.0.0:8000',
+    '0.0.0.0'
 ]
 
 AUTHENTICATION_BACKENDS = (
