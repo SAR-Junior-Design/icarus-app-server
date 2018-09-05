@@ -25,16 +25,6 @@ SECRET_KEY = 'zcr39#y7%e9a$r+n=72uw6@2k_o*fw-)so&fl&@_+1v0v+@in@'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    'http://localhost:8080',
-    'dev.icarusmap.com',
-    'icarusmap.com',
-    'www.icarusmap.com',
-    '0.0.0.0:8000',
-    '0.0.0.0'
-]
-
-
 # CORS_ORIGIN_ALLOW_ALL = True
 CORS_ORIGIN_WHITELIST = (
     'localhost:8080',
@@ -42,12 +32,12 @@ CORS_ORIGIN_WHITELIST = (
     'icarusmap.com'
 )
 
-# ACCESS_CONTROL_ALLOW_CREDENTIALS = True
-
-
-# SESSION_COOKIE_NAME = 'sessionid-icarus-session'
-
-# Application definition
+EMAIL_USE_SSL = False
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'imap.gmail.com'
+EMAIL_HOST_USER = 'samcrane8@gmail.com'
+EMAIL_HOST_PASSWORD = 'tbbkptgsqxsfiuwn'
+EMAIL_PORT = 587
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -88,8 +78,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'icarus_backend.middleware.DisableCSRF.DisableCSRF',
 ]
-
-ALLOWED_HOSTS = ['0.0.0.0']
 
 ROOT_URLCONF = 'icarus_backend.urls'
 
@@ -155,12 +143,32 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+ALLOWED_HOSTS = [
+    'localhost',
+    'localhost:8000',
+    '127.0.0.1',
+    '127.0.0.1:8000',
+    'dev.icarusmap.com',
+    'devapi.icarusmap.com',
+    'icarusmap.com',
+    'www.icarusmap.com',
+    '0.0.0.0:8000',
+    '0.0.0.0'
+]
+
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',  # default
     'oauth2_provider.backends.OAuth2Backend'
 )
 
 AUTH_USER_MODEL = 'users.IcarusUser'
+
+# REDIS related settings
+REDIS_HOST = 'localhost'
+REDIS_PORT = '6379'
+BROKER_URL = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0'
+BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
+CELERY_RESULT_BACKEND = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0'
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
