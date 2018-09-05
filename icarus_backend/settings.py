@@ -149,6 +149,7 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     '127.0.0.1:8000',
     'dev.icarusmap.com',
+    'devapi.icarusmap.com',
     'icarusmap.com',
     'www.icarusmap.com',
     '0.0.0.0:8000',

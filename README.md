@@ -28,3 +28,17 @@ This application server uses Postgis to maintain geolocated data.
 Therefore there's some shit you have to setup.
 
 Read this link, one day I will have a more comprehensive tutorial on this readme: https://docs.djangoproject.com/en/2.0/ref/contrib/gis/install/
+
+## Run
+
+You will need three different `screen` instances with the following commands typed in to run this server: 
+
+First one is the django server: `python manage.py runserver`
+
+Second one is the redis-server: `redis-server`
+
+Third one is the celery worker: `celery worker -A icarus_backend --loglevel=debug --concurrency=1`
+
+## Authentication
+
+We use OAuth2 to authenticate users, though for superusers we also have the model backend. 
