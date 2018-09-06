@@ -13,4 +13,4 @@ django-oauth-toolkit
 Celery
 redis
 celery[redis]
-jsonschema
+schema

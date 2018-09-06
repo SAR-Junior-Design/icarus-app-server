@@ -27,5 +27,6 @@ urlpatterns = [
     path('mission/', include('icarus_backend.mission.MissionUrls')),
     path('drone/', include('icarus_backend.drone.DroneUrls')),
     path('official/', include('icarus_backend.government_official.GovernmentOfficialUrls')),
+    path('pilot/', include('icarus_backend.pilot.PilotUrls')),
     url(r'^o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
 ]
