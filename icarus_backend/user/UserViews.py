@@ -4,6 +4,7 @@ from django.http import HttpResponse
 import json
 from .UserService import UserService
 from users.models import IcarusUser as User
+from icarus_backend.pilot.PilotModel import Pilot
 from users.tokens import account_activation_token
 from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
@@ -51,13 +52,23 @@ def icarus_register_user(request):
         send_verification_email.delay(user.username, user.email, user.id, domain)
         user.save()
         response_data = {'message': 'User successfully registered.'}
-        responseJson = json.dumps(response_data)
-        return HttpResponse(responseJson, content_type="application/json", status=200)
+        response_json = json.dumps(response_data)
+        return HttpResponse(response_json, content_type="application/json", status=200)
     else:
         response_data = {'message': 'User already exists.'}
-        responseJson = json.dumps(response_data)
-        return HttpResponse(responseJson, content_type="application/json", status=403)
+        response_json = json.dumps(response_data)
+        return HttpResponse(response_json, content_type="application/json", status=403)
 
+
+def icarus_register_pilot(body, user):
+    faa_registration_number = body['faa_registration_number']
+    remote_pilot_certificate_number = body['remote_pilot_certificate_number']
+    mobile_phone_number = body['mobile_phone_number']
+    pilot = Pilot(user, FAARegistrationNumber=faa_registration_number,
+                  remotePilotCertificateNumber=remote_pilot_certificate_number,
+                  mobilePhoneNumber=mobile_phone_number)
+    pilot.save()
+    return True
 
 
 @api_view(['GET'])
@@ -76,13 +87,16 @@ def icarus_logout(request):
 @api_view(['GET'])
 def icarus_get_user(request):
     if request.user.is_active:
-        userInfo= UserService.user_info(request.user)
-        responseJson = json.dumps(userInfo)
-        return HttpResponse(responseJson, content_type="application/json", status=200)
+        response_dict = dict()
+        response_dict['user'] = request.user.as_dict()
+        if request.user.role == 'pilot':
+            response_dict['pilot'] = Pilot.objects.filter(user=request.user).first()
+        response_json = json.dumps(response_dict)
+        return HttpResponse(response_json, content_type="application/json", status=200)
     else:
         response_data = {'message': 'Already logged out.'}
-        responseJson = json.dumps(response_data)
-        return HttpResponse(responseJson, content_type="application/json", status=401)
+        response_json = json.dumps(response_data)
+        return HttpResponse(response_json, content_type="application/json", status=401)
 
 
 @api_view(['GET'])
