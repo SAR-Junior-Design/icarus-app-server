@@ -9,7 +9,7 @@ from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
 from icarus_backend.user.tasks import send_verification_email
 from django.contrib.sites.shortcuts import get_current_site
-from schema import Schema, SchemaError
+from icarus_backend.utils import validate_body
 
 from .userViewSchemas import register_user_schema
 
@@ -19,7 +19,7 @@ def icarus_login(request):
     body = request.data
     username = body['username']
     password = body['password']
-    user = authenticate(username=username, password=password)
+    user = User.objects.filter(username=username, password=password).first()
     if user is not None:
         if user.is_active:
             request.session.set_expiry(86400) #sets the exp. value of the session
@@ -28,7 +28,7 @@ def icarus_login(request):
             responseJson = json.dumps(response_data)
             return HttpResponse(responseJson, content_type="application/json", status=200)
         else:
-            response_data = {'message': 'Bad user credentials.'}
+            response_data = {'message': 'User needs to be activated via email.'}
             responseJson = json.dumps(response_data)
             return HttpResponse(responseJson, content_type="application/json", status=401)
     else:
@@ -38,14 +38,9 @@ def icarus_login(request):
 
 
 @api_view(['POST'])
+@validate_body(register_user_schema)
 def icarus_register_user(request):
     body = request.data
-    try:
-        schema = Schema([register_user_schema])
-        schema.validate([body])
-    except SchemaError as error:
-        response_json = json.dumps({"message": str(error)})
-        return HttpResponse(response_json, content_type="application/json", status=401)
     username = body['username']
     password = body['password']
     email = body['email']

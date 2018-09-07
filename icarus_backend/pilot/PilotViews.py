@@ -6,20 +6,15 @@ from users.models import IcarusUser as User
 from icarus_backend.pilot.PilotModel import Pilot
 from icarus_backend.user.tasks import send_verification_email
 from django.contrib.sites.shortcuts import get_current_site
-from schema import Schema, SchemaError
+from icarus_backend.utils import validate_body
 
 from .pilotViewSchemas import register_pilot_schema
 
 
 @api_view(['POST'])
+@validate_body(register_pilot_schema)
 def icarus_register_pilot(request):
     body = request.data
-    try:
-        schema = Schema([register_pilot_schema])
-        schema.validate([body])
-    except SchemaError as error:
-        response_json = json.dumps({"message": str(error)})
-        return HttpResponse(response_json, content_type="application/json", status=401)
     username = body['username']
     password = body['password']
     email = body['email']
