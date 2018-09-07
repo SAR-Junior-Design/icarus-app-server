@@ -52,7 +52,7 @@ def register_drone(request):
 @api_view(['POST'])
 def edit_drone_details(request):
     body = request.data
-    drone = Drone.objects.filter(id__in=drone_id).first()
+    drone = Drone.objects.filter(id__in=body['id']).first()
     if 'description' in body.keys():
         drone.description = body['description']
     if 'manufacturer' in body.keys():
