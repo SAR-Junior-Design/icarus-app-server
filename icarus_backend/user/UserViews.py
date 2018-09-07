@@ -10,8 +10,8 @@ from django.utils.http import urlsafe_base64_decode
 from icarus_backend.user.tasks import send_verification_email
 from django.contrib.sites.shortcuts import get_current_site
 from icarus_backend.utils import validate_body
-
-from .userViewSchemas import register_user_schema
+from oauth2_provider.decorators import protected_resource
+from .userViewSchemas import register_user_schema, update_user_info_schema
 
 
 @api_view(['POST'])
@@ -46,8 +46,38 @@ def icarus_get_user(request):
         response_dict = dict()
         response_dict['user'] = request.user.as_dict()
         if request.user.role == 'pilot':
-            response_dict['pilot'] = Pilot.objects.filter(user=request.user).first().as_dict()
+            pilot = Pilot.objects.filter(user=request.user).first()
+            if pilot:
+                response_dict['pilot'] = Pilot.objects.filter(user=request.user).first().as_dict()
         response_json = json.dumps(response_dict)
+        return HttpResponse(response_json, content_type="application/json", status=200)
+    else:
+        response_data = {'message': 'Already logged out.'}
+        response_json = json.dumps(response_data)
+        return HttpResponse(response_json, content_type="application/json", status=401)
+
+
+@protected_resource()
+@api_view(['POST'])
+@validate_body(update_user_info_schema)
+def update_user_info(request):
+    if request.user.is_active:
+        parsed_json = request.data
+        user = User.objects.filter(id=request.user.id).first()
+        if 'email' in parsed_json:
+            user.email = parsed_json['email']
+        if 'password' in parsed_json:
+            user.password = parsed_json['password']
+        if 'username' in parsed_json:
+            check_user = User.objects.filter(username=parsed_json['username']).first()
+            if check_user:
+                response_json = json.dumps({'message': 'Username already taken.'})
+                return HttpResponse(response_json, content_type="application/json", status=401)
+            user.username = parsed_json['username']
+        if 'picture_url' in parsed_json:
+            user.picture = parsed_json['picture_url']
+        user.save()
+        response_json = json.dumps({'message': 'Info updated successfully.'})
         return HttpResponse(response_json, content_type="application/json", status=200)
     else:
         response_data = {'message': 'Already logged out.'}
@@ -58,11 +88,11 @@ def icarus_get_user(request):
 @api_view(['GET'])
 def icarus_is_logged_in(request):
     if request.user.is_active:
-        responseJson = json.dumps(True)
-        return HttpResponse(responseJson, content_type="application/json", status=200)
+        response_json = json.dumps(True)
+        return HttpResponse(response_json, content_type="application/json", status=200)
     else:
-        responseJson = json.dumps(False)
-        return HttpResponse(responseJson, content_type="application/json", status=200)
+        response_json = json.dumps(False)
+        return HttpResponse(response_json, content_type="application/json", status=200)
 
 
 @api_view(['GET'])

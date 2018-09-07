@@ -6,6 +6,7 @@ from django.db import models
 class IcarusUser(AbstractUser):
     # add additional fields in here
     role = models.TextField() #operator, government_official
+    picture_url = models.TextField()
 
     def __str__(self):
         return self.email
@@ -17,7 +18,8 @@ class IcarusUser(AbstractUser):
             "email": self.email,
             "first_name": self.first_name,
             "last_name": self.last_name,
-            "role": self.role
+            "role": self.role,
+            "picture_url": self.picture_url
         }
 
     class Meta:
