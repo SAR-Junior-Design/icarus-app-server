@@ -15,29 +15,6 @@ from .userViewSchemas import register_user_schema
 
 
 @api_view(['POST'])
-def icarus_login(request):
-    body = request.data
-    username = body['username']
-    password = body['password']
-    user = User.objects.filter(username=username, password=password).first()
-    if user is not None:
-        if user.is_active:
-            request.session.set_expiry(86400) #sets the exp. value of the session
-            login(request, user) #the user is now logged in
-            response_data = {'message': 'Login successful.'}
-            responseJson = json.dumps(response_data)
-            return HttpResponse(responseJson, content_type="application/json", status=200)
-        else:
-            response_data = {'message': 'User needs to be activated via email.'}
-            responseJson = json.dumps(response_data)
-            return HttpResponse(responseJson, content_type="application/json", status=401)
-    else:
-        response_data = {'message': 'Bad user credentials.'}
-        responseJson = json.dumps(response_data)
-        return HttpResponse(responseJson, content_type="application/json", status=401)
-
-
-@api_view(['POST'])
 @validate_body(register_user_schema)
 def icarus_register_user(request):
     body = request.data
@@ -61,19 +38,6 @@ def icarus_register_user(request):
         response_data = {'message': 'User already exists.'}
         response_json = json.dumps(response_data)
         return HttpResponse(response_json, content_type="application/json", status=403)
-
-
-@api_view(['GET'])
-def icarus_logout(request):
-    if request.user.is_active:
-        logout(request)
-        response_data = {'message': 'Logout successful.'}
-        response_json = json.dumps(response_data)
-        return HttpResponse(response_json, content_type="application/json", status=200)
-    else:
-        response_data = {'message': 'Already logged out.'}
-        responseJson = json.dumps(response_data)
-        return HttpResponse(responseJson, content_type="application/json", status=401)
 
 
 @api_view(['GET'])
