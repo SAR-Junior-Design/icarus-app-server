@@ -20,7 +20,6 @@ from django.contrib.sites.shortcuts import get_current_site
 @api_view(['POST'])
 def register_mission(request):
     body = request.data
-    z = 1/0
     title = body['title']
     _type = body['type']
     description = body['description']

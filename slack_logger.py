@@ -57,6 +57,11 @@ class SlackExceptionHandler(AdminEmailHandler):
                 'color': 'danger',
                 'fields': [
                     {
+                        "title": "Build",
+                        "value": secrets["build"],
+                        "short": True,
+                    },
+                    {
                         "title": "Level",
                         "value": record.levelname,
                         "short": True,
