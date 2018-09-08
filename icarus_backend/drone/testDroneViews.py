@@ -71,3 +71,17 @@ class DroneViewTest(TestCase):
         response = self.client.post(reverse('get drones past missions'), json.dumps(gdpm_json),
                                     content_type='application/json')
         self.assertEqual(response.status_code, 200)
+
+    def test_edit_drone_details(self):
+        response = self.client.post(reverse('icarus login'), json.dumps(login_info),
+                                    content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        edit_drone_details_json = {'id': '1', 'manufacturer': 'Icarus', 'color': 'Red'}
+        response = self.client.post(reverse('edit drone details'), json.dumps(edit_drone_details_json),
+                                    content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        drone = Drone.objects.filter(id='1')
+        self.assertEqual(drone.id, '1')
+        self.assertEqual(drone.manufacturer, 'Icarus')
+        self.assertEqual(drone.color, 'Red')
+        self.assertEqual(len(drones), 1)

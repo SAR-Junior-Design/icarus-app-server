@@ -47,3 +47,21 @@ def register_drone(request):
     response_data = {'message': 'Successfully registered this drone.'}
     response_json = json.dumps(response_data)
     return HttpResponse(response_json, content_type="application/json")
+
+@protected_resource()
+@api_view(['POST'])
+def edit_drone_details(request):
+    body = request.data
+    drone = Drone.objects.filter(id__in=body['id']).first()
+    if 'description' in body.keys():
+        drone.description = body['description']
+    if 'manufacturer' in body.keys():
+        drone.manufacturer = body['manufacturer']
+    if 'type' in body.keys():
+        drone.type = body['type']
+    if 'color' in body.keys():
+        drone.color = body['color']
+    new_drone.save()
+    response_data = {'message': 'Drone Successfully updated.'}
+    response_json = json.dumps(response_data)
+    return HttpResponse(response_json, content_type="application/json", status=200)
