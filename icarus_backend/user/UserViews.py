@@ -41,11 +41,12 @@ def icarus_register_user(request):
 
 
 @api_view(['GET'])
-def icarus_get_user(request):
+def icarus_get_current_user(request):
     if request.user.is_active:
         response_dict = dict()
         response_dict['user'] = request.user.as_dict()
         if request.user.role == 'pilot':
+            print('it happened!')
             pilot = Pilot.objects.filter(user=request.user).first()
             if pilot:
                 response_dict['pilot'] = Pilot.objects.filter(user=request.user).first().as_dict()
@@ -58,24 +59,43 @@ def icarus_get_user(request):
 
 
 @protected_resource()
+@api_view(['GET'])
+def icarus_get_user(request):
+    id = request.query_params.get('id')
+    user = User.objects.filter(id=id).first()
+    if not user:
+        response_data = {'message': 'No pilot with this id exists.'}
+        response_json = json.dumps(response_data)
+        return HttpResponse(response_json, content_type="application/json", status=400)
+    response_dict = dict()
+    response_dict['user'] = user.as_dict()
+    if request.user.role == 'pilot':
+        pilot = Pilot.objects.filter(user=request.user).first()
+        if pilot:
+            response_dict['pilot'] = Pilot.objects.filter(user=request.user).first().as_dict()
+    response_json = json.dumps(response_dict)
+    return HttpResponse(response_json, content_type="application/json", status=200)
+
+
+@protected_resource()
 @api_view(['POST'])
 @validate_body(update_user_info_schema)
 def update_user_info(request):
     if request.user.is_active:
         parsed_json = request.data
         user = User.objects.filter(id=request.user.id).first()
-        if 'email' in parsed_json:
+        if 'email' in parsed_json and user.email != parsed_json['email']:
             user.email = parsed_json['email']
-        if 'password' in parsed_json:
+        if 'password' in parsed_json and user.password != parsed_json['password']:
             user.password = parsed_json['password']
-        if 'username' in parsed_json:
+        if 'username' in parsed_json and user.username != parsed_json['username']:
             check_user = User.objects.filter(username=parsed_json['username']).first()
             if check_user:
                 response_json = json.dumps({'message': 'Username already taken.'})
                 return HttpResponse(response_json, content_type="application/json", status=401)
             user.username = parsed_json['username']
-        if 'picture_url' in parsed_json:
-            user.picture = parsed_json['picture_url']
+        if 'picture_url' in parsed_json and user.picture_url != parsed_json['picture_url']:
+            user.picture_url = parsed_json['picture_url']
         user.save()
         response_json = json.dumps({'message': 'Info updated successfully.'})
         return HttpResponse(response_json, content_type="application/json", status=200)
