@@ -23,13 +23,15 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'zcr39#y7%e9a$r+n=72uw6@2k_o*fw-)so&fl&@_+1v0v+@in@'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-# CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_ALLOW_ALL = True
 CORS_ORIGIN_WHITELIST = (
     'localhost:8080',
     'dev.icarusmap.com',
-    'icarusmap.com'
+    'icarusmap.com',
+    'www.icarusmap.com',
+    'api.icarusmap.com'
 )
 
 EMAIL_USE_SSL = False
@@ -152,7 +154,6 @@ ALLOWED_HOSTS = [
     'devapi.icarusmap.com',
     'api.icarusmap.com',
     'icarusmap.com',
-    'www.icarusmap.com',
     '0.0.0.0:8000',
     '0.0.0.0'
 ]
