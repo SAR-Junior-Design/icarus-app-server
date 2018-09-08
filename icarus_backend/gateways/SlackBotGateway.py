@@ -1,6 +1,5 @@
 import requests
 import json
-import os
 from icarus_backend.secrets import secrets
 
 is_prod = True
@@ -14,4 +13,3 @@ def post_prod_health(message):
     r = requests.post(webhook_url, data=json.dumps({"text": message}), headers={'content-type':'application/json'})
     return r
 
-post_prod_health('listen!')
