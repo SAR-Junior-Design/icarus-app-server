@@ -14,3 +14,5 @@ Celery
 redis
 celery[redis]
 schema
+slackclient
+requests

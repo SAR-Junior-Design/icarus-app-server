@@ -64,7 +64,7 @@ def icarus_get_user(request):
     id = request.query_params.get('id')
     user = User.objects.filter(id=id).first()
     if not user:
-        response_data = {'message': 'No pilot with this id exists.'}
+        response_data = {'message': 'No user with this id exists.'}
         response_json = json.dumps(response_data)
         return HttpResponse(response_json, content_type="application/json", status=400)
     response_dict = dict()
