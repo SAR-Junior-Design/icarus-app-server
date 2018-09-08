@@ -8,9 +8,12 @@ from .MissionModel import Mission
 from icarus_backend.assets.AssetModel import Asset
 from icarus_backend.drone.DroneModel import Drone
 from icarus_backend.clearance.ClearanceModel import Clearance
+from users.models import IcarusUser as User
 from django.utils import timezone
 from oauth2_provider.decorators import protected_resource
 from rest_framework.decorators import api_view
+from .tasks import new_mission_registered_email
+from django.contrib.sites.shortcuts import get_current_site
 
 
 @protected_resource()
@@ -46,6 +49,13 @@ def register_mission(request):
     new_mission.save()
     response_data = {'message': 'Successfully registered the mission.'}
     response_json = json.dumps(response_data)
+
+    domain = get_current_site(request).domain
+
+    government_officials = User.objects.filter(role='government_official').all()
+
+    for official in government_officials:
+        new_mission_registered_email.delay(official.username, official.email, official.id, domain)
     return HttpResponse(response_json, content_type="application/json")
 
 
