@@ -7,8 +7,10 @@ from icarus_backend.pilot.PilotModel import Pilot
 from icarus_backend.user.tasks import send_verification_email
 from django.contrib.sites.shortcuts import get_current_site
 from icarus_backend.utils import validate_body
+from oauth2_provider.decorators import protected_resource
 
 from .pilotViewSchemas import register_pilot_schema
+from .PilotModel import Pilot
 
 
 @api_view(['POST'])
@@ -47,3 +49,17 @@ def register_pilot(body, user):
                   mobilePhoneNumber=mobile_phone_number)
     pilot.save()
     return True
+
+
+@protected_resource()
+@api_view(['GET'])
+def get_pilot_data(request):
+    id = request.query_params.get('id')
+    print(id)
+    pilot = Pilot.objects.filter(user=id).first()
+    if not pilot:
+        response_data = {'message': 'No pilot with this id exists.'}
+        response_json = json.dumps(response_data)
+        return HttpResponse(response_json, content_type="application/json", status=400)
+    response_json = json.dumps(pilot.as_dict())
+    return HttpResponse(response_json, content_type="application/json", status=200)
