@@ -40,13 +40,17 @@ def get_drones_past_missions(request):
 def register_drone(request):
     body = request.data
     drone_id = uuid.uuid4()
+    name = ''
+    if 'name' in body.keys():
+        name = body['name']
     new_drone = Drone(id=drone_id, owner=request.user, description=body['description'],
                       manufacturer=body['manufacturer'], type=body['type'],
-                      color=body['color'])
+                      color=body['color'], name=name)
     new_drone.save()
     response_data = {'message': 'Successfully registered this drone.'}
     response_json = json.dumps(response_data)
     return HttpResponse(response_json, content_type="application/json")
+
 
 @protected_resource()
 @api_view(['POST'])
@@ -61,7 +65,9 @@ def edit_drone_details(request):
         drone.type = body['type']
     if 'color' in body.keys():
         drone.color = body['color']
-    new_drone.save()
+    if 'name' in body.keys():
+        drone.name = body['name']
+    drone.save()
     response_data = {'message': 'Drone Successfully updated.'}
     response_json = json.dumps(response_data)
     return HttpResponse(response_json, content_type="application/json", status=200)

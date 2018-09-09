@@ -5,6 +5,7 @@ from django.utils import timezone
 
 class Drone(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.TextField()
     id = models.TextField(primary_key=True)
     description = models.TextField()
     manufacturer = models.TextField()
@@ -15,6 +16,7 @@ class Drone(models.Model):
     def as_dict(self):
         return {
             "id": self.id,
+            "name": self.name,
             "owner_id": self.owner.id,
             "description": self.description,
             "manufacturer": self.manufacturer,
