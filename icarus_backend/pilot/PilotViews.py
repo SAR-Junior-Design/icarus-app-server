@@ -9,7 +9,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from icarus_backend.utils import validate_body
 from oauth2_provider.decorators import protected_resource
 
-from .pilotViewSchemas import register_pilot_schema
+from .pilotViewSchemas import register_pilot_schema, update_pilot_info_schema
 from .PilotModel import Pilot
 
 
@@ -63,3 +63,27 @@ def get_pilot_data(request):
         return HttpResponse(response_json, content_type="application/json", status=400)
     response_json = json.dumps(pilot.as_dict())
     return HttpResponse(response_json, content_type="application/json", status=200)
+
+
+@protected_resource()
+@api_view(['POST'])
+@validate_body(update_pilot_info_schema)
+def update_pilot_info(request):
+    if request.user.is_active:
+        parsed_json = request.data
+        pilot = Pilot.objects.filter(user_id=request.user.id).first()
+        if 'faa_registration_number' in parsed_json and pilot.FAARegistrationNumber \
+                != parsed_json['faa_registration_number']:
+            pilot.FAARegistrationNumber = parsed_json['faa_registration_number']
+        if 'remote_pilot_certificate_number' in parsed_json and pilot.remotePilotCertificateNumber \
+                != parsed_json['remote_pilot_certificate_number']:
+            pilot.remotePilotCertificateNumber = parsed_json['remote_pilot_certificate_number']
+        if 'mobile_phone_number' in parsed_json and pilot.mobilePhoneNumber != parsed_json['mobile_phone_number']:
+            pilot.mobilePhoneNumber = parsed_json['mobile_phone_number']
+        pilot.save()
+        response_json = json.dumps({'message': 'Info updated successfully.'})
+        return HttpResponse(response_json, content_type="application/json", status=200)
+    else:
+        response_data = {'message': 'Already logged out.'}
+        response_json = json.dumps(response_data)
+        return HttpResponse(response_json, content_type="application/json", status=401)

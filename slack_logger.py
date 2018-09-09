@@ -144,4 +144,5 @@ class SlackExceptionHandler(AdminEmailHandler):
         webhook_url = secrets['webhook_url']
 
         # send it
-        r = requests.post(webhook_url, data=data)
+        if secrets['slack_log']:
+            r = requests.post(webhook_url, data=data)
