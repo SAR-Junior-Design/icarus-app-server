@@ -197,6 +197,11 @@ def add_drone_to_mission(request):
     body = request.data
     drone = Drone.objects.filter(id=body['drone_id']).first()
     mission = Mission.objects.filter(id=body['mission_id']).first()
+    check_asset = Asset.objects.filter(mission=mission, drone=drone).first()
+    if check_asset:
+        response_data = {'message': 'Drone already added.'}
+        response_json = json.dumps(response_data)
+        return HttpResponse(response_json, content_type="application/json", status=400)
     asset = Asset(drone=drone, mission=mission, operator=request.user)
     asset.save()
     response_data = {'message': 'Successfully added drone to mission.'}
