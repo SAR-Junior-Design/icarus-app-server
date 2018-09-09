@@ -72,14 +72,14 @@ def update_pilot_info(request):
     if request.user.is_active:
         parsed_json = request.data
         pilot = Pilot.objects.filter(user_id=request.user.id).first()
-        if 'faa_registration_number' in parsed_json and pilot.faa_registration_number \
+        if 'faa_registration_number' in parsed_json and pilot.FAARegistrationNumber \
                 != parsed_json['faa_registration_number']:
-            pilot.faa_registration_number = parsed_json['faa_registration_number']
-        if 'remote_pilot_certificate_number' in parsed_json and pilot.password \
+            pilot.FAARegistrationNumber = parsed_json['faa_registration_number']
+        if 'remote_pilot_certificate_number' in parsed_json and pilot.remotePilotCertificateNumber \
                 != parsed_json['remote_pilot_certificate_number']:
-            pilot.password = parsed_json['remote_pilot_certificate_number']
-        if 'mobile_phone_number' in parsed_json and pilot.picture_url != parsed_json['mobile_phone_number']:
-            pilot.picture_url = parsed_json['mobile_phone_number']
+            pilot.remotePilotCertificateNumber = parsed_json['remote_pilot_certificate_number']
+        if 'mobile_phone_number' in parsed_json and pilot.mobilePhoneNumber != parsed_json['mobile_phone_number']:
+            pilot.mobilePhoneNumber = parsed_json['mobile_phone_number']
         pilot.save()
         response_json = json.dumps({'message': 'Info updated successfully.'})
         return HttpResponse(response_json, content_type="application/json", status=200)
