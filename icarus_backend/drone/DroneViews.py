@@ -45,7 +45,7 @@ def register_drone(request):
         name = body['name']
     new_drone = Drone(id=drone_id, owner=request.user, description=body['description'],
                       manufacturer=body['manufacturer'], type=body['type'],
-                      color=body['color'], name='')
+                      color=body['color'], name=name)
     new_drone.save()
     response_data = {'message': 'Successfully registered this drone.'}
     response_json = json.dumps(response_data)
