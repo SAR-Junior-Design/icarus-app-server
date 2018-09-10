@@ -19,6 +19,7 @@ from django.urls import path, include
 from django.conf.urls import url
 
 from icarus_backend.cors.CorsModel import CorsModel
+from icarus_backend.airspace_restriction.AirspaceRestrictionModel import AirspaceRestriction
 
 urlpatterns = [
     path('admin/', admin.site.urls),
