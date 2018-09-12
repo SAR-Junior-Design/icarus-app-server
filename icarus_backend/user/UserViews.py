@@ -40,22 +40,18 @@ def icarus_register_user(request):
         return HttpResponse(response_json, content_type="application/json", status=403)
 
 
+@protected_resource()
 @api_view(['GET'])
 def icarus_get_current_user(request):
-    if request.user.is_active:
-        response_dict = dict()
-        response_dict['user'] = request.user.as_dict()
-        if request.user.role == 'pilot':
-            print('it happened!')
-            pilot = Pilot.objects.filter(user=request.user).first()
-            if pilot:
-                response_dict['pilot'] = Pilot.objects.filter(user=request.user).first().as_dict()
-        response_json = json.dumps(response_dict)
-        return HttpResponse(response_json, content_type="application/json", status=200)
-    else:
-        response_data = {'message': 'Already logged out.'}
-        response_json = json.dumps(response_data)
-        return HttpResponse(response_json, content_type="application/json", status=401)
+    response_dict = dict()
+    response_dict['user'] = request.user.as_dict()
+    if request.user.role == 'pilot':
+        print('it happened!')
+        pilot = Pilot.objects.filter(user=request.user).first()
+        if pilot:
+            response_dict['pilot'] = Pilot.objects.filter(user=request.user).first().as_dict()
+    response_json = json.dumps(response_dict)
+    return HttpResponse(response_json, content_type="application/json", status=200)
 
 
 @protected_resource()
