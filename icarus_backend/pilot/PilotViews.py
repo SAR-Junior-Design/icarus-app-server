@@ -1,9 +1,8 @@
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate
 from rest_framework.decorators import api_view
 from django.http import HttpResponse
 import json
 from users.models import IcarusUser as User
-from icarus_backend.pilot.PilotModel import Pilot
 from icarus_backend.user.tasks import send_verification_email
 from django.contrib.sites.shortcuts import get_current_site
 from icarus_backend.utils import validate_body
@@ -55,7 +54,6 @@ def register_pilot(body, user):
 @api_view(['GET'])
 def get_pilot_data(request):
     id = request.query_params.get('id')
-    print(id)
     pilot = Pilot.objects.filter(user=id).first()
     if not pilot:
         response_data = {'message': 'No pilot with this id exists.'}
