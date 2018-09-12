@@ -7,10 +7,22 @@ class GovernmentOfficial(models.Model):
     area = models.PolygonField(default='POLYGON EMPTY')
     # clearance
 
-    def as_dict(self):
+    def as_geojson(self):
         return {
-            "user_id": self.user.id,
-            "area": self.area[0].coords,
+            "type": "FeatureCollection",
+            "features": [
+                {
+                    "geometry": {
+                        "coordinates": self.area[0].coords,
+                        "type": "Polygon"
+                    }
+                }
+            ]
         }
 
 
+    def as_dict(self):
+        return {
+            "user_id": self.user.id,
+            "area": self.area.as_geojson()
+        }
