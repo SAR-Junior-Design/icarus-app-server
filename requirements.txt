@@ -16,3 +16,4 @@ celery[redis]
 schema
 slackclient
 requests
+gunicorn
