@@ -7,10 +7,13 @@ from .AirspaceRestrictionModel import AirspaceRestriction
 from icarus_backend.assets.AssetModel import Asset
 import json, uuid
 from rest_framework.decorators import api_view
+from icarus_backend.airspace_restriction.AirSpaceRestrictionSchemas import add_airspace_restriction_schema
+from icarus_backend.utils import validate_body
 
 
 @protected_resource()
 @api_view(['POST'])
+@validate_body(add_airspace_restriction_schema)
 def add_airspace_restriction(request):
     body = request.data
     if request.user.role == 'government_official':
@@ -45,8 +48,7 @@ def add_airspace_restriction(request):
         response_data = {'message': 'Successfully created an Airspace Restriction.'}
         response_json = json.dumps(response_data)
         return HttpResponse(response_json, status=200, content_type="application/json")
-
-
-    response_data = {'message': 'Not a Government Official'}
-    response_json = json.dumps(response_data)
-    return HttpResponse(response_json, status=403, content_type="application/json")
+    else:
+        response_data = {'message': 'Cannot make airspace restriction, not a Government Official.'}
+        response_json = json.dumps(response_data)
+        return HttpResponse(response_json, status=403, content_type="application/json")
