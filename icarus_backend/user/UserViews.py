@@ -132,13 +132,10 @@ def activate(request, uidb64, token):
 def forgot_password(request):
     email = request.query_params.get('email')
     user = User.objects.filter(email=email).first()
-    if not user:
-        response_data = {'message': 'No user with this email exists.'}
-        response_json = json.dumps(response_data)
-        return HttpResponse(response_json, content_type="application/json", status=401)
-    domain = get_current_site(request).domain
-    reset_password_email.delay(user.username, user.email, user.id, domain)
-    response_data = {'message': 'Password reset email is being sent.'}
+    if user:
+        domain = get_current_site(request).domain
+        reset_password_email.delay(user.username, user.email, user.id, domain)
+    response_data = {'message': 'If your account exists a password reset email is being sent.'}
     response_json = json.dumps(response_data)
     return HttpResponse(response_json, content_type="application/json")
 
