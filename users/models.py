@@ -5,6 +5,8 @@ from django.db import models
 
 class IcarusUser(AbstractUser):
     # add additional fields in here
+    username = models.TextField(unique=True)
+    email = models.TextField(unique=True)
     role = models.TextField() #operator, government_official
     picture_url = models.TextField()
 

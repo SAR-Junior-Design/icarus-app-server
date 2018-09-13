@@ -19,3 +19,18 @@ def send_verification_email(username, email, user_id, domain):
         mail_subject, message, to=[email]
     )
     email.send()
+
+
+@app.task
+def reset_password_email(username, email, user_id, domain):
+    mail_subject = 'Reset Password'
+    message = render_to_string('reset_password.html', {
+        'user': username,
+        'domain': domain,
+        'uid': urlsafe_base64_encode(force_bytes(user_id)).decode(),
+        'token': account_activation_token.make_token(username),
+    })
+    email = EmailMessage(
+        mail_subject, message, to=[email]
+    )
+    email.send()

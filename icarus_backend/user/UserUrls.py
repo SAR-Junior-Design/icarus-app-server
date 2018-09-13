@@ -11,5 +11,8 @@ urlpatterns = [
     path('register_user/', UserViews.icarus_register_user, name='icarus register user'),
     url(r'^activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
         UserViews.activate, name='activate'),
-    path('update/', UserViews.update_user_info, name='icarus update user')
+    path('update/', UserViews.update_user_info, name='icarus update user'),
+    path('forgot_password/', UserViews.forgot_password, name='forgot password'),
+    url(r'^reset_password/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
+        UserViews.reset_password, name='reset password'),
 ]
