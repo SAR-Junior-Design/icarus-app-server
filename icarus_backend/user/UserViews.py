@@ -47,7 +47,6 @@ def icarus_get_current_user(request):
     response_dict = dict()
     response_dict['user'] = request.user.as_dict()
     if request.user.role == 'pilot':
-        print('it happened!')
         pilot = Pilot.objects.filter(user=request.user).first()
         if pilot:
             response_dict['pilot'] = Pilot.objects.filter(user=request.user).first().as_dict()
@@ -166,7 +165,6 @@ def reset_password(request, uidb64, token):
         if user is not None and account_activation_token.check_token(user.username, token):
             body = request.data
             new_password = body['new_password']
-            print(new_password)
             user.set_password(new_password)
             user.save()
             # return redirect('home')
