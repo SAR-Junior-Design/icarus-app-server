@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate, login, logout
+from django.template.response import TemplateResponse
 from rest_framework.decorators import api_view
 from django.http import HttpResponse
 import json
@@ -7,7 +8,7 @@ from icarus_backend.pilot.PilotModel import Pilot
 from users.tokens import account_activation_token
 from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
-from icarus_backend.user.tasks import send_verification_email
+from icarus_backend.user.tasks import send_verification_email, reset_password_email
 from django.contrib.sites.shortcuts import get_current_site
 from icarus_backend.utils import validate_body
 from oauth2_provider.decorators import protected_resource
@@ -28,9 +29,9 @@ def icarus_register_user(request):
                                         password=password,
                                         role='pilot')
         user.is_active = False
+        user.save()
         domain = get_current_site(request).domain
         send_verification_email.delay(user.username, user.email, user.id, domain)
-        user.save()
         response_data = {'message': 'User successfully registered.'}
         response_json = json.dumps(response_data)
         return HttpResponse(response_json, content_type="application/json", status=200)
@@ -125,3 +126,55 @@ def activate(request, uidb64, token):
         return HttpResponse('Thank you for your email confirmation. Now you can login your account.')
     else:
         return HttpResponse('Activation link is invalid!')
+
+
+@api_view(['GET'])
+def forgot_password(request):
+    email = request.query_params.get('email')
+    user = User.objects.filter(email=email).first()
+    if not user:
+        response_data = {'message': 'No user with this email exists.'}
+        response_json = json.dumps(response_data)
+        return HttpResponse(response_json, content_type="application/json", status=401)
+    domain = get_current_site(request).domain
+    reset_password_email.delay(user.username, user.email, user.id, domain)
+    response_data = {'message': 'Password reset email is being sent.'}
+    response_json = json.dumps(response_data)
+    return HttpResponse(response_json, content_type="application/json")
+
+
+@api_view(['GET', 'POST'])
+def reset_password(request, uidb64, token):
+    if request.method == 'GET':
+        try:
+            uid = force_text(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=int(uid))
+            validlink = True
+        except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+            validlink = False
+        return TemplateResponse(request, 'password_reset_confirm.html', {
+            'validlink': validlink,
+            'uid': uidb64,
+            'token': token
+            })
+    elif request.method == 'POST':
+        try:
+            uid = force_text(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=int(uid))
+            validlink = True
+        except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+            validlink = False
+        if user is not None and account_activation_token.check_token(user.username, token):
+            body = request.data
+            new_password = body['new_password']
+            print(new_password)
+            user.set_password(new_password)
+            user.save()
+            # return redirect('home')
+            return HttpResponse('Your password has been updated. Now you can login your account.')
+        else:
+            return HttpResponse('Activation link is invalid!')
+
+

@@ -6,10 +6,12 @@ from django.http import HttpResponse
 def validate_body(body_schema):
     def real_decorator(f):
         def wrapper(*args, **kwargs):
-            body = args[0].data
+            request = args[0]
             try:
-                schema = Schema([body_schema])
-                schema.validate([body])
+                if request.method == 'POST':
+                    body = request.data
+                    schema = Schema([body_schema])
+                    schema.validate([body])
             except SchemaError as error:
                 response_json = json.dumps({"message": str(error)})
                 return HttpResponse(response_json, content_type="application/json", status=401)
