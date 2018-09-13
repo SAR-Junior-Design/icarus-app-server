@@ -3,7 +3,7 @@ from users.models import IcarusUser as User
 
 
 class GovernmentOfficial(models.Model):
-    user = models.ForeignKey(User, primary_key=True, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, primary_key=True, on_delete=models.CASCADE)
     area = models.PolygonField(default='POLYGON EMPTY')
     # clearance
 

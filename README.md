@@ -35,6 +35,8 @@ You will need three different `screen` instances with the following commands typ
 
 First one is the django server: `python manage.py runserver`
 
+Or to run through gunicorn: `gunicorn --bind 0.0.0.0:8000 myproject.wsgi:application`
+
 Second one is the redis-server: `redis-server`
 
 Third one is the celery worker: `celery worker -A icarus_backend --loglevel=debug --concurrency=1`
