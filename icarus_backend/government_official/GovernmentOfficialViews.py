@@ -4,6 +4,11 @@ from oauth2_provider.decorators import protected_resource
 import json
 from icarus_backend.mission.MissionModel import Mission
 from django.utils import timezone
+from users.models import IcarusUser as User
+from icarus_backend.government_official.GovernmentOfficialModel import GovernmentOfficial
+from django.contrib.gis.geos import Polygon
+from icarus_backend.government_official.GovernmentOfficialSchemas import upgrade_to_government_official
+from icarus_backend.utils import validate_body
 
 
 @protected_resource()
@@ -11,6 +16,34 @@ from django.utils import timezone
 def is_government_official(request):
     response_json = json.dumps(request.user.role == 'government_official')
     return HttpResponse(response_json, content_type="application/json")
+
+
+@protected_resource()
+@api_view(['POST'])
+@validate_body(upgrade_to_government_official)
+def upgrade_to_government_official(request):
+    current_user = User.objects.filter(id=request.user.id).first()
+    if not current_user.is_staff:
+        response_data = {'message': 'Must be admin to use this endpoint.'}
+        response_json = json.dumps(response_data)
+        return HttpResponse(response_json, status=403, content_type="application/json")
+    body = request.data
+    user_id = body['user_id']
+    coordinates = body['area']['features'][0]['geometry']['coordinates'][0]
+    if coordinates[0] is not coordinates[-1]:
+        coordinates += [coordinates[0]]
+    user = User.objects.filter(id=user_id).first()
+    if user.role == 'government_official':
+        response_data = {'message': 'Already a government official.'}
+        response_json = json.dumps(response_data)
+        return HttpResponse(response_json, status=400, content_type="application/json")
+    user.role = 'government_official'
+    user.save()
+    area = Polygon(coordinates)
+    gov_off = GovernmentOfficial(user=user, area=area)
+    gov_off.save()
+    response_json = {'message': 'User successfully upgraded to government official.'}
+    return HttpResponse(json.dumps(response_json), content_type='application/json')
 
 
 @protected_resource()

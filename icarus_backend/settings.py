@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 import os
 import sys
 from django.utils.log import DEFAULT_LOGGING
+from icarus_backend.secrets import secrets
 
 LOGGING = DEFAULT_LOGGING
 
@@ -37,7 +38,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'zcr39#y7%e9a$r+n=72uw6@2k_o*fw-)so&fl&@_+1v0v+@in@'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = secrets['debug']
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ORIGIN_WHITELIST = (
@@ -127,7 +128,7 @@ DATABASES = {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'icarus_db',
         'USER': 'django_user',
-        'PASSWORD': 'ignorance_is_strength_war_is_peace_ingsoc',
+        'PASSWORD': secrets["database"]["password"],
         'HOST': 'localhost',
         'PORT': '',
     }
