@@ -11,10 +11,10 @@ from rest_framework.decorators import api_view
 
 @protected_resource()
 @api_view(['POST'])
-def add_airspace_restriction(reqeust):
+def add_airspace_restriction(request):
     body = request.data
     if request.user.role == 'government_official':
-        created_by = request.user.username
+        created_by = request.user
 
         starts_at = parse_datetime(body['starts_at'])
         if not is_aware(starts_at):
@@ -44,3 +44,9 @@ def add_airspace_restriction(reqeust):
         new_airspace_restriction.save()
         response_data = {'message': 'Successfully created an Airspace Restriction.'}
         response_json = json.dumps(response_data)
+        return HttpResponse(response_json, status=200, content_type="application/json")
+
+
+    response_data = {'message': 'Not a Government Official'}
+    response_json = json.dumps(response_data)
+    return HttpResponse(response_json, status=403, content_type="application/json")
