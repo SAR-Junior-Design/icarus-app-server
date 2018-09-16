@@ -35,7 +35,7 @@ You will need three different `screen` instances with the following commands typ
 
 First one is the django server: `python manage.py runserver`
 
-Or to run through gunicorn: `gunicorn --bind 0.0.0.0:8000 myproject.wsgi:application`
+Or to run through gunicorn: `gunicorn --bind 0.0.0.0:8000 icarus_backend.wsgi:application`
 
 Second one is the redis-server: `redis-server`
 
