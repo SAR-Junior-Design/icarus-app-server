@@ -5,6 +5,7 @@ from django.http import HttpResponse
 import json
 from users.models import IcarusUser as User
 from icarus_backend.pilot.PilotModel import Pilot
+from icarus_backend.government_official.GovernmentOfficialModel import GovernmentOfficial
 from users.tokens import account_activation_token
 from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
@@ -47,10 +48,13 @@ def icarus_get_current_user(request):
     response_dict = dict()
     response_dict['user'] = request.user.as_dict()
     if request.user.role == 'pilot':
-        print('it happened!')
         pilot = Pilot.objects.filter(user=request.user).first()
         if pilot:
-            response_dict['pilot'] = Pilot.objects.filter(user=request.user).first().as_dict()
+            response_dict['pilot'] = pilot.as_dict()
+    elif request.user.role == 'government_official':
+        official = GovernmentOfficial.objects.filter(user=request.user).first()
+        if official:
+            response_dict['government_official'] = official.as_dict()
     response_json = json.dumps(response_dict)
     return HttpResponse(response_json, content_type="application/json", status=200)
 
@@ -67,9 +71,13 @@ def icarus_get_user(request):
     response_dict = dict()
     response_dict['user'] = user.as_dict()
     if request.user.role == 'pilot':
-        pilot = Pilot.objects.filter(user=request.user).first()
+        pilot = Pilot.objects.filter(user=user).first()
         if pilot:
-            response_dict['pilot'] = Pilot.objects.filter(user=request.user).first().as_dict()
+            response_dict['pilot'] = pilot.as_dict()
+    elif request.user.role == 'government_official':
+        official = GovernmentOfficial.objects.filter(user=user).first()
+        if official:
+            response_dict['government_official'] = official.as_dict()
     response_json = json.dumps(response_dict)
     return HttpResponse(response_json, content_type="application/json", status=200)
 

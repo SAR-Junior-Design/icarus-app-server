@@ -20,9 +20,8 @@ class GovernmentOfficial(models.Model):
             ]
         }
 
-
     def as_dict(self):
         return {
             "user_id": self.user.id,
-            "area": self.area.as_geojson()
+            "area": self.as_geojson()
         }
