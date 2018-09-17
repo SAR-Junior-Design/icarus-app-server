@@ -14,6 +14,9 @@ from oauth2_provider.decorators import protected_resource
 from rest_framework.decorators import api_view
 from .tasks import new_mission_registered_email
 from django.contrib.sites.shortcuts import get_current_site
+from icarus_backend.mission.MissionViewsSchema import get_missions_schema
+from icarus_backend.utils import validate_body
+from .MissionController import MissionController
 
 
 @protected_resource()
@@ -74,34 +77,9 @@ def get_mission_info(request):
 
 @protected_resource()
 @api_view(['GET', 'POST'])
+@validate_body(get_missions_schema)
 def get_missions(request):
-    user = request.user
-    print(user.role)
-    if user.role == 'government_official':
-        return government_get_missions(request)
-    else:
-        return pilot_get_missions(request)
-
-
-def government_get_missions(request):
-    missions = Mission.objects.all()
-    dictionaries = []
-    for mission in missions:
-        mission_dict = mission.as_dict()
-        mission_dict['num_drones'] = Asset.objects.filter(mission=mission).count()
-        dictionaries += [mission_dict]
-
-    return HttpResponse(json.dumps(dictionaries), content_type='application/json')
-
-
-def pilot_get_missions(request):
-    missions = Mission.objects.filter(created_by=request.user.id)
-    dictionaries = []
-    for mission in missions:
-        mission_dict = mission.as_dict()
-        mission_dict['num_drones'] = Asset.objects.filter(mission=mission).count()
-        dictionaries += [mission_dict]
-
+    dictionaries = MissionController.get_missions(request.user, request.method, request.data)
     return HttpResponse(json.dumps(dictionaries), content_type='application/json')
 
 
