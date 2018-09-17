@@ -16,6 +16,7 @@ from .tasks import new_mission_registered_email
 from django.contrib.sites.shortcuts import get_current_site
 from icarus_backend.mission.MissionViewsSchema import get_missions_schema
 from icarus_backend.utils import validate_body
+from .MissionController import MissionController
 
 
 @protected_resource()
@@ -78,22 +79,7 @@ def get_mission_info(request):
 @api_view(['GET', 'POST'])
 @validate_body(get_missions_schema)
 def get_missions(request):
-    user = request.user
-    missions = Mission.objects
-    if request.method == 'POST':
-        body = request.data
-        start_datetime = parse_datetime(body['start_datetime'])
-        end_datetime = parse_datetime(body['end_datetime'])
-        missions = missions.filter(ends_at__gt=start_datetime, starts_at__lt=end_datetime)
-    if user.role == 'pilot':
-        missions = missions.filter(created_by=request.user.id)
-    missions = missions.all()
-    dictionaries = []
-    for mission in missions:
-        mission_dict = mission.as_dict()
-        mission_dict['num_drones'] = Asset.objects.filter(mission=mission).count()
-        dictionaries += [mission_dict]
-
+    dictionaries = MissionController.get_missions(request.user, request.method, request.data)
     return HttpResponse(json.dumps(dictionaries), content_type='application/json')
 
 
