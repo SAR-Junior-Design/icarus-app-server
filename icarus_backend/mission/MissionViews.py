@@ -14,7 +14,7 @@ from oauth2_provider.decorators import protected_resource
 from rest_framework.decorators import api_view
 from .tasks import new_mission_registered_email
 from django.contrib.sites.shortcuts import get_current_site
-from icarus_backend.mission.MissionViewsSchema import get_missions_schema
+from icarus_backend.mission.MissionViewsSchema import MissionViewSchemas
 from icarus_backend.utils import validate_body
 from .MissionController import MissionController
 
@@ -77,7 +77,7 @@ def get_mission_info(request):
 
 @protected_resource()
 @api_view(['GET', 'POST'])
-@validate_body(get_missions_schema)
+@validate_body(MissionViewSchemas.get_missions_schema)
 def get_missions(request):
     dictionaries = MissionController.get_missions(request.user, request.method, request.data)
     return HttpResponse(json.dumps(dictionaries), content_type='application/json')
@@ -136,15 +136,10 @@ def delete_mission(request):
 
 @protected_resource()
 @api_view(['POST'])
-def edit_mission_details(request):
+@validate_body(MissionViewSchemas.edit_mission_schema)
+def edit_mission(request):
     body = request.data
-    mission_id = body['mission_id']
-    mission = Mission.objects.filter(pk=mission_id).first()
-    if 'title' in body.keys():
-        mission.title = body['title']
-    if 'description' in body.keys():
-        mission.description = body['description']
-    mission.save()
+    MissionController.edit_mission(body)
     response_data = {'message': 'Mission Successfully updated.'}
     response_json = json.dumps(response_data)
     return HttpResponse(response_json, content_type="application/json", status=200)

@@ -1,6 +1,7 @@
 from .MissionModel import Mission
 from django.utils.dateparse import parse_datetime
 from icarus_backend.assets.AssetModel import Asset
+from django.contrib.gis.geos import Polygon
 
 
 class MissionController:
@@ -24,4 +25,20 @@ class MissionController:
             mission_dict['num_drones'] = Asset.objects.filter(mission=mission).count()
             dictionaries += [mission_dict]
         return dictionaries
+
+    @staticmethod
+    def edit_mission(body):
+        mission_id = body['mission_id']
+        mission = Mission.objects.filter(pk=mission_id).first()
+        if 'title' in body.keys():
+            mission.title = body['title']
+        if 'description' in body.keys():
+            mission.description = body['description']
+        if 'area' in body.keys():
+            coordinates = body['area']['features'][0]['geometry']['coordinates']
+            if coordinates[0][0] != coordinates[-1][0] or coordinates[0][1] != coordinates[-1][1]:
+                coordinates += [coordinates[0]]
+            area = Polygon(coordinates)
+            mission.area = area
+        mission.save()
 
