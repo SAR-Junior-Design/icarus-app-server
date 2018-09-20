@@ -9,4 +9,5 @@ urlpatterns = [
     path('get_upcoming_missions/', GovernmentOfficialViews.get_upcoming_missions, name='jurisdiction get upcoming missions'),
     path('get_current_missions/', GovernmentOfficialViews.get_current_missions, name='jurisdiction get current missions'),
     path('upgrade_to/', GovernmentOfficialViews.upgrade_to_government_official, name='upgrade to official'),
+    path('flight_histogram/', GovernmentOfficialViews.flight_histogram, name='flight histogram'),
 ]

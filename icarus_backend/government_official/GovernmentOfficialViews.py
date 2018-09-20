@@ -10,6 +10,8 @@ from django.contrib.gis.geos import Polygon
 from icarus_backend.government_official.GovernmentOfficialSchemas import upgrade_to_government_official
 from icarus_backend.utils import validate_body
 
+from icarus_backend.government_official.GovernmentOfficialController import GovernmentOfficialController
+
 
 @protected_resource()
 @api_view(['GET'])
@@ -81,3 +83,13 @@ def get_current_missions(request):
                                       ends_at__gt=_now)
     dictionaries = [obj.as_dict() for obj in missions]
     return HttpResponse(json.dumps(dictionaries), content_type='application/json')
+
+
+@protected_resource()
+@api_view(['POST'])
+def flight_histogram(request):
+    body = request.data
+    flight_histogram_data = GovernmentOfficialController.jurisdiction_drone_flight_histogram(
+        body['start_day'], body['end_day'], request.user)
+    response_json = {'flight_histogram': flight_histogram_data}
+    return HttpResponse(json.dumps(response_json), content_type='application/json')
