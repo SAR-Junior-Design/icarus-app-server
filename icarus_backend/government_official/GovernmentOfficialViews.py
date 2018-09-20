@@ -4,11 +4,14 @@ from oauth2_provider.decorators import protected_resource
 import json
 from icarus_backend.mission.MissionModel import Mission
 from django.utils import timezone
+from django.utils.dateparse import parse_datetime
 from users.models import IcarusUser as User
 from icarus_backend.government_official.GovernmentOfficialModel import GovernmentOfficial
 from django.contrib.gis.geos import Polygon
-from icarus_backend.government_official.GovernmentOfficialSchemas import upgrade_to_government_official
+from icarus_backend.government_official.GovernmentOfficialSchemas import GovernmentOfficialSchemas
 from icarus_backend.utils import validate_body
+
+from icarus_backend.government_official.GovernmentOfficialController import GovernmentOfficialController
 
 
 @protected_resource()
@@ -20,7 +23,7 @@ def is_government_official(request):
 
 @protected_resource()
 @api_view(['POST'])
-@validate_body(upgrade_to_government_official)
+@validate_body(GovernmentOfficialSchemas.upgrade_to_government_official)
 def upgrade_to_government_official(request):
     current_user = User.objects.filter(id=request.user.id).first()
     if not current_user.is_staff:
@@ -81,3 +84,19 @@ def get_current_missions(request):
                                       ends_at__gt=_now)
     dictionaries = [obj.as_dict() for obj in missions]
     return HttpResponse(json.dumps(dictionaries), content_type='application/json')
+
+
+@protected_resource()
+@api_view(['POST'])
+@validate_body(GovernmentOfficialSchemas.flight_histogram_schema)
+def flight_histogram(request):
+    body = request.data
+    start_day = parse_datetime(body['start_day'])
+    end_day = parse_datetime(body['end_day'])
+    if start_day is None or end_day is None:
+        response_json = {'message': 'One or more datetime could not be parsed.'}
+        return HttpResponse(json.dumps(response_json), content_type='application/json', status=400)
+    flight_histogram_data = GovernmentOfficialController.jurisdiction_drone_flight_histogram(
+        start_day, end_day, request.user)
+    response_json = {'flight_histogram': flight_histogram_data}
+    return HttpResponse(json.dumps(response_json), content_type='application/json')
