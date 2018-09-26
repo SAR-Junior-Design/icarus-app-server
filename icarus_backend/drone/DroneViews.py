@@ -56,7 +56,11 @@ def register_drone(request):
 @api_view(['POST'])
 def edit_drone_details(request):
     body = request.data
-    drone = Drone.objects.filter(id__in=body['id']).first()
+    drone = Drone.objects.filter(id=body['id']).first()
+    if drone is None:
+        response_data = {'message': 'No drone with that ID exists.'}
+        response_json = json.dumps(response_data)
+        return HttpResponse(response_json, content_type="application/json", status=400)
     if 'description' in body.keys():
         drone.description = body['description']
     if 'manufacturer' in body.keys():
