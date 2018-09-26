@@ -3,11 +3,14 @@ from django.http import HttpResponse
 from django.core.serializers.json import DjangoJSONEncoder
 from oauth2_provider.decorators import protected_resource
 from rest_framework.decorators import api_view
+from icarus_backend.document.DocumentViewSchemas import DocumentViewSchemas
+from icarus_backend.utils import validate_body
 import uuid
 import json
 
 @protected_resource()
 @api_view(['POST'])
+@validate_body(DocumentViewSchemas.add_document_schema)
 def add_document(request):
     user = request.user
     request = request.data
@@ -41,6 +44,7 @@ def get_user_documents(request):
 
 @protected_resource()
 @api_view(['POST'])
+@validate_body(DocumentViewSchemas.document_id_schema)
 def delete_document(request):
     user = request.user
     request = request.data
@@ -54,6 +58,7 @@ def delete_document(request):
 
 @protected_resource()
 @api_view(['POST'])
+@validate_body(DocumentViewSchemas.document_id_schema)
 def get_document_from_id(request):
     request = request.data
     id = request['id']
@@ -68,6 +73,7 @@ def get_document_from_id(request):
 
 @protected_resource()
 @api_view(['POST'])
+@validate_body(DocumentViewSchemas.document_type_schema)
 def get_documents_by_type(request):
     request = request.data
     type = request['type']
